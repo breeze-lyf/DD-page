@@ -119,55 +119,6 @@
     .service-banner { display: none; margin-bottom: 18px; padding: 14px 16px; border: 1px solid rgba(114, 130, 118, .26); border-radius: 14px; background: rgba(255, 255, 255, .45); line-height: 1.6; }
     .empty { padding: 28px; border: 2px dashed rgba(114, 130, 118, .18); border-radius: 16px; text-align: center; color: var(--muted); background: rgba(255, 255, 255, .36); }
     .hidden { display: none; }
-    .app.app-locked { display: none; }
-    .login-screen {
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      position: relative;
-      z-index: 2;
-    }
-    .login-card {
-      width: min(520px, 100%);
-      padding: 30px;
-      border: 2px solid rgba(47, 127, 150, .28);
-      border-radius: 16px;
-      background:
-        linear-gradient(180deg, rgba(255, 245, 226, .96), rgba(255, 255, 255, .78)),
-        repeating-linear-gradient(90deg, rgba(255, 193, 225, .2) 0 10px, transparent 10px 22px);
-      box-shadow: 9px 9px 0 rgba(131, 196, 229, .22);
-    }
-    .login-kicker {
-      width: fit-content;
-      margin-bottom: 12px;
-      padding: 5px 10px;
-      border: 2px solid rgba(47, 127, 150, .22);
-      border-radius: 999px;
-      color: #253033;
-      background: rgba(255, 193, 225, .42);
-      font-size: 13px;
-      font-weight: 800;
-    }
-    .login-card h1 {
-      margin-bottom: 12px;
-      color: #253033;
-      font-size: clamp(30px, 5vw, 46px);
-      text-shadow: 2px 2px 0 rgba(255, 193, 225, .28);
-    }
-    .login-card p {
-      color: #4e6870;
-      line-height: 1.7;
-    }
-    .login-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 4px;
-    }
-    .login-card .status-box {
-      margin-top: 12px;
-    }
     @media (max-width: 980px) {
       .app { grid-template-columns: 1fr; }
       aside { position: static; height: auto; padding: 16px; }
@@ -922,22 +873,7 @@
   </style>
 </head>
 <body>
-  <section class="login-screen hidden" id="loginScreen" aria-label="账号密码登录">
-    <form class="login-card" id="loginForm" novalidate>
-      <div class="login-kicker">lzddd 的私人宝典</div>
-      <h1>登录工作台</h1>
-      <p>登录功能已暂停。现在会直接进入工作台，新增客户、随记、事项会自动保存到云数据库，其他电脑打开同一网址也能看到。</p>
-      <label>账号<input id="loginAccount" autocomplete="username" placeholder="例如 lzddd"></label>
-      <label>密码<input id="loginPassword" type="password" autocomplete="current-password" placeholder="输入你设置的密码"></label>
-      <div class="login-actions">
-        <button class="primary" type="submit">进入工作台</button>
-        <button class="secondary" id="clearLoginButton" type="button">清除本机登录</button>
-      </div>
-      <div class="status-box" id="loginStatus">账号和密码只保存在当前浏览器里，用来访问你的云端工作台数据。</div>
-    </form>
-  </section>
-
-  <div class="app app-locked" id="appRoot">
+  <div class="app" id="appRoot">
     <aside>
       <div class="brand">
         <strong>CBE 日化销售作战台</strong>
@@ -1145,7 +1081,7 @@
           <h2>今日资讯</h2>
           <p class="subtitle">大陆网络优先：默认只抓国内行业媒体、监管和渠道动态；海外资讯改成单独按钮，避免没有 VPN 时卡住。</p>
           <div class="server-tools"><button class="primary" id="syncNewsButton" type="button">抓取国内资讯</button><button class="secondary" id="syncGlobalNewsButton" type="button">抓取海外参考</button><button class="secondary" id="checkRemindersButton" type="button">检查客户跟进</button></div>
-          <div class="status-box" id="serverStatus">云端自动同步已开启：新增客户、随记、事项和抓取资讯后，会实时保存到 CloudBase。换电脑只需要打开正式网址即可看到同一份数据。登录功能已临时暂停。</div>
+          <div class="status-box" id="serverStatus">免登录云端自动同步已开启：新增客户、随记、事项和抓取资讯后，会实时保存到 CloudBase。换电脑只需要打开正式网址即可看到同一份数据。</div>
         </section>
         <section class="panel" style="margin-top: 14px;"><h2>已抓取资讯</h2><div class="list" id="fetchedNewsList"></div></section>
         <div class="source-grid" id="sourceList"></div>
@@ -1163,11 +1099,8 @@
     const legacyStorageKey = "cbe-beauty-learning-v1";
     const hasServer = location.protocol === "http:" || location.protocol === "https:";
     const apiBase = String(window.LZDDD_API_BASE || "").replace(/\/$/, "");
-    const cloudAccountStorageKey = "lzddd-cloud-account";
-    const cloudTokenStorageKey = "lzddd-cloud-access-token";
-    const loginPaused = true;
     const isCloudMode = Boolean(apiBase);
-    let cloudAuthReady = loginPaused || !isCloudMode;
+    let cloudAuthReady = true;
     let cloudRefreshTimer = null;
     const today = new Date();
     const dateFormat = new Intl.DateTimeFormat("zh-CN", { month: "long", day: "numeric", weekday: "short" });
@@ -1226,40 +1159,12 @@
     function includesAny(record, keyword) { return Object.values(record).join(" ").toLowerCase().includes(keyword.toLowerCase()); }
     function cloneData(data) { return JSON.parse(JSON.stringify(data)); }
     function apiUrl(path) { return apiBase ? `${apiBase}${path}` : path; }
-    function toBase64(value) {
-      const bytes = new TextEncoder().encode(value);
-      let binary = "";
-      bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
-      return btoa(binary);
-    }
     function setCloudSyncStatus(message) {
       const serverStatus = document.querySelector("#serverStatus");
       if (serverStatus) serverStatus.textContent = message;
     }
-    function setLoginStatus(message) {
-      const status = document.querySelector("#loginStatus");
-      if (status) status.textContent = message;
-    }
-    function showLogin(message = "请输入账号和密码。") {
-      if (loginPaused) {
-        hideLogin();
-        return;
-      }
-      if (!isCloudMode) return;
-      cloudAuthReady = false;
-      document.querySelector("#loginScreen")?.classList.remove("hidden");
-      document.querySelector("#appRoot")?.classList.add("app-locked");
-      const accountInput = document.querySelector("#loginAccount");
-      if (accountInput && !accountInput.value) accountInput.value = localStorage.getItem(cloudAccountStorageKey) || "lzddd";
-      setLoginStatus(message);
-      setTimeout(() => document.querySelector("#loginPassword")?.focus(), 0);
-    }
     function hideLogin() {
       cloudAuthReady = true;
-      document.querySelector("#loginScreen")?.classList.add("hidden");
-      document.querySelector("#appRoot")?.classList.remove("app-locked");
-      const passwordInput = document.querySelector("#loginPassword");
-      if (passwordInput) passwordInput.value = "";
     }
     async function responseMessage(response) {
       try {
@@ -1272,21 +1177,13 @@
     async function apiFetch(path, options = {}) {
       const { timeoutMs = 15000, ...fetchOptions } = options;
       const headers = new Headers(options.headers || {});
-      const account = localStorage.getItem(cloudAccountStorageKey) || "";
-      const token = localStorage.getItem(cloudTokenStorageKey);
-      if (token) {
-        headers.set("x-lzddd-token", token);
-        if (account) headers.set("authorization", `Basic ${toBase64(`${account}:${token}`)}`);
-      }
       const controller = new AbortController();
       const timer = window.setTimeout(() => controller.abort(), timeoutMs);
       try {
         const response = await fetch(apiUrl(path), { ...fetchOptions, headers, signal: fetchOptions.signal || controller.signal });
         if (response.status === 401) {
           const message = await responseMessage(response);
-          localStorage.removeItem(cloudTokenStorageKey);
-          if (isCloudMode) showLogin(message || "账号或密码不正确，请重新输入。");
-          throw new Error(message || "需要正确的账号和密码。");
+          throw new Error(message || "云端接口暂时拒绝访问。");
         }
         return response;
       } catch (error) {
@@ -1300,21 +1197,18 @@
     }
     async function apiPostPlain(path, payload = {}, options = {}) {
       const { timeoutMs = 15000 } = options;
-      const account = localStorage.getItem(cloudAccountStorageKey) || "";
-      const token = localStorage.getItem(cloudTokenStorageKey) || "";
       const controller = new AbortController();
       const timer = window.setTimeout(() => controller.abort(), timeoutMs);
       try {
         const response = await fetch(apiUrl(path), {
           method: "POST",
-          body: JSON.stringify({ account, token, ...payload }),
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(payload),
           signal: controller.signal
         });
         if (response.status === 401) {
           const message = await responseMessage(response);
-          localStorage.removeItem(cloudTokenStorageKey);
-          if (isCloudMode) showLogin(message || "账号或密码不正确，请重新输入。");
-          throw new Error(message || "需要正确的账号和密码。");
+          throw new Error(message || "云端接口暂时拒绝访问。");
         }
         return response;
       } catch (error) {
@@ -1356,10 +1250,6 @@
     }
     async function saveState() {
       localStorage.setItem(storageKey, JSON.stringify(state));
-      if (isCloudMode && !cloudAuthReady) {
-        showLogin("请先登录，登录后我会继续保存到云端。");
-        return false;
-      }
       if (hasServer) {
         try {
           const response = await apiPostPlain("/api/write", { state });
@@ -1367,7 +1257,7 @@
           if (isCloudMode) setCloudSyncStatus("已保存到云端。公司电脑刷新后会看到同一份数据。");
           return true;
         } catch (error) {
-          if (isCloudMode) setCloudSyncStatus(`云端保存失败：${error.message || "请重新登录后再试。"}`);
+          if (isCloudMode) setCloudSyncStatus(`云端保存失败：${error.message || "请稍后再试。"}`);
           return false;
         }
       }
@@ -1375,10 +1265,6 @@
     }
     async function loadServerState({ blockLogin = true } = {}) {
       if (!hasServer) return;
-      if (isCloudMode && !loginPaused && !localStorage.getItem(cloudTokenStorageKey)) {
-        showLogin("请输入账号和密码，进入后就不会反复弹窗。");
-        return;
-      }
       try {
         if (isCloudMode) cloudAuthReady = true;
         const response = await apiPostPlain("/api/read");
@@ -1404,7 +1290,7 @@
         loadAiConfig().then(renderAll);
       } catch (error) {
         if (isCloudMode && blockLogin) {
-          showLogin(error.message || "读取云端数据失败，请重新输入账号密码。");
+          setCloudSyncStatus(`云端数据读取失败：${error.message || "请稍后再试。"}`);
         } else if (isCloudMode) {
           setCloudSyncStatus(`云端数据稍后同步：${error.message || "暂时读取失败。"}`);
         }
@@ -1446,20 +1332,9 @@
     }
     async function verifySavedLogin() {
       if (!isCloudMode) return;
-      if (loginPaused) {
-        cloudAuthReady = true;
-        hideLogin();
-        setCloudSyncStatus("免登录云同步已开启：正在读取 CloudBase 数据。");
-        loadServerState({ blockLogin: false });
-        return;
-      }
-      if (!localStorage.getItem(cloudTokenStorageKey)) {
-        showLogin("请输入账号和密码，进入后就不会反复弹窗。");
-        return;
-      }
       cloudAuthReady = true;
       hideLogin();
-      setCloudSyncStatus("已进入工作台，正在后台验证并同步云端数据。");
+      setCloudSyncStatus("免登录云同步已开启：正在读取 CloudBase 数据。");
       loadServerState({ blockLogin: false });
     }
     function mergeById(currentRecords, incomingRecords) {
@@ -1781,40 +1656,6 @@
     document.querySelector("#checkRemindersButton").addEventListener("click", () => {
       const due = dueClients();
       document.querySelector("#serverStatus").textContent = due.length ? `今天需要跟进：${due.map((client) => client.company).join("、")}` : "今天没有到期跟进客户。";
-    });
-    document.querySelector("#loginForm").addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const account = text(document.querySelector("#loginAccount").value);
-      const token = text(document.querySelector("#loginPassword").value);
-      if (!account) {
-        setLoginStatus("请先输入账号。");
-        document.querySelector("#loginAccount")?.focus();
-        return;
-      }
-      if (!token) {
-        setLoginStatus("请先输入密码。");
-        document.querySelector("#loginPassword")?.focus();
-        return;
-      }
-      setLoginStatus("正在进入工作台...");
-      localStorage.setItem(cloudAccountStorageKey, account);
-      localStorage.setItem(cloudTokenStorageKey, token);
-      cloudAuthReady = true;
-      hideLogin();
-      setCloudSyncStatus("已进入工作台，正在后台验证并同步云端数据。");
-      try {
-        const response = await apiPostPlain("/api/auth", {}, { timeoutMs: 8000 });
-        if (!response.ok) throw new Error(await responseMessage(response));
-        setCloudSyncStatus("登录验证成功，正在后台同步云端数据。");
-        loadServerState({ blockLogin: false });
-      } catch (error) {
-        setCloudSyncStatus(`后台验证失败：${error.message || "账号或密码可能不正确。"} 请点左侧刷新或重新登录。`);
-      }
-    });
-    document.querySelector("#clearLoginButton").addEventListener("click", () => {
-      localStorage.removeItem(cloudAccountStorageKey);
-      localStorage.removeItem(cloudTokenStorageKey);
-      showLogin("已清除这台电脑保存的登录信息，请重新输入。");
     });
     renderAll();
     showView(location.hash.replace("#view-", "") || "dashboard");

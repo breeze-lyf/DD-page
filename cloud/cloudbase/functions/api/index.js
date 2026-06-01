@@ -83,53 +83,6 @@ function json(statusCode, payload) {
   return { statusCode, headers: headers(), body: JSON.stringify(payload) };
 }
 
-function headerValue(event, name) {
-  const target = name.toLowerCase();
-  const found = Object.entries(event.headers || {}).find(([key]) => key.toLowerCase() === target);
-  return found ? String(found[1]) : "";
-}
-
-function authDetails(event) {
-  const expectedPassword = process.env.APP_PASSWORD || "";
-  const expectedUsername = process.env.APP_USERNAME || process.env.APP_ACCOUNT || "lzddd";
-  const body = safeRequestBody(event);
-  const auth = headerValue(event, "authorization");
-  const bearer = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7) : "";
-  let basicUsername = "";
-  let basicPassword = "";
-  if (auth.toLowerCase().startsWith("basic ")) {
-    try {
-      const decoded = Buffer.from(auth.slice(6), "base64").toString("utf8");
-      const splitIndex = decoded.indexOf(":");
-      if (splitIndex >= 0) {
-        basicUsername = decoded.slice(0, splitIndex);
-        basicPassword = decoded.slice(splitIndex + 1);
-      }
-    } catch {}
-  }
-  const tokenHeader = headerValue(event, "x-lzddd-token");
-  const bodyUsername = String(body.account || body.username || "");
-  const bodyPassword = String(body.token || body.password || "");
-  const receivedUsername = basicUsername || bodyUsername;
-  const passwordOk = Boolean(expectedPassword) && (tokenHeader === expectedPassword || bearer === expectedPassword || basicPassword === expectedPassword || bodyPassword === expectedPassword);
-  const usernameOk = !expectedUsername || receivedUsername === expectedUsername;
-  return {
-    authorized: Boolean(expectedPassword) && passwordOk && usernameOk,
-    expectedUsername,
-    basicUsername: receivedUsername,
-    usernameOk,
-    passwordOk,
-    tokenHeaderLength: tokenHeader.length,
-    basicPasswordLength: Math.max(basicPassword.length, bodyPassword.length),
-    hasAuthorization: Boolean(auth),
-    hasPassword: Boolean(expectedPassword)
-  };
-}
-
-function isAuthorized(event) {
-  return authDetails(event).authorized;
-}
-
 function requestUrl(event) {
   const url = new URL(event.path || "/", "https://cloudbase.local");
   Object.entries(event.queryStringParameters || {}).forEach(([key, value]) => {
@@ -146,14 +99,6 @@ function requestBody(event) {
   if (!event.body) return {};
   const value = event.isBase64Encoded ? Buffer.from(event.body, "base64").toString("utf8") : event.body;
   return typeof value === "string" ? JSON.parse(value) : value;
-}
-
-function safeRequestBody(event) {
-  try {
-    return requestBody(event);
-  } catch {
-    return {};
-  }
 }
 
 async function readState() {
@@ -427,34 +372,6 @@ exports.main = async (event = {}) => {
         requiresUsername: false,
         usernameSource: "paused"
       });
-    }
-
-    const authRequired = false;
-    if (authRequired) {
-      if (!process.env.APP_PASSWORD) {
-        return json(500, { ok: false, message: "云端后端还没有设置登录密码，已拒绝公开访问。" });
-      }
-
-      const authInfo = authDetails(event);
-      if (!authInfo.authorized) {
-        if (pathname === "/api/auth" || pathname === "/auth") {
-          const sentLength = Math.max(authInfo.tokenHeaderLength, authInfo.basicPasswordLength);
-          return json(401, {
-            ok: false,
-            message: `登录失败：账号${authInfo.usernameOk ? "已匹配" : "不匹配"}；浏览器发出的密码长度为 ${sentLength}；密码${authInfo.passwordOk ? "已匹配" : "不匹配"}。`,
-            diagnostic: {
-              expectedUsername: authInfo.expectedUsername,
-              receivedUsername: authInfo.basicUsername,
-              usernameOk: authInfo.usernameOk,
-              passwordOk: authInfo.passwordOk,
-              sentPasswordLength: sentLength,
-              hasAuthorization: authInfo.hasAuthorization,
-              hasPasswordConfig: authInfo.hasPassword
-            }
-          });
-        }
-        return json(401, { ok: false, message: "账号或密码不正确。" });
-      }
     }
 
     if (pathname === "/api/auth" || pathname === "/auth") {

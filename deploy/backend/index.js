@@ -83,20 +83,6 @@ function json(statusCode, payload) {
   return { statusCode, headers: headers(), body: JSON.stringify(payload) };
 }
 
-function headerValue(event, name) {
-  const target = name.toLowerCase();
-  const found = Object.entries(event.headers || {}).find(([key]) => key.toLowerCase() === target);
-  return found ? String(found[1]) : "";
-}
-
-function isAuthorized(event) {
-  const expected = process.env.APP_PASSWORD || "";
-  if (!expected) return false;
-  const auth = headerValue(event, "authorization");
-  const bearer = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7) : "";
-  return headerValue(event, "x-lzddd-token") === expected || bearer === expected;
-}
-
 function requestUrl(event) {
   const url = new URL(event.path || "/", "https://cloudbase.local");
   Object.entries(event.queryStringParameters || {}).forEach(([key, value]) => {
@@ -378,15 +364,20 @@ exports.main = async (event = {}) => {
 
   try {
     if (pathname === "/api/health" || pathname === "/health") {
-      return json(200, { ok: true, mode: "cloudbase", requiresPassword: Boolean(process.env.APP_PASSWORD) });
+      return json(200, { ok: true, mode: "cloudbase", loginPaused: true, requiresPassword: false });
     }
 
-    if (!process.env.APP_PASSWORD) {
-      return json(500, { ok: false, message: "云端后端还没有设置 APP_PASSWORD，已拒绝公开访问。" });
+    if (pathname === "/api/auth" || pathname === "/auth") {
+      return json(200, { ok: true });
     }
 
-    if (!isAuthorized(event)) {
-      return json(401, { ok: false, message: "需要云端访问口令。" });
+    if ((pathname === "/api/read" || pathname === "/read") && method === "POST") {
+      return json(200, await readState());
+    }
+
+    if ((pathname === "/api/write" || pathname === "/write") && method === "POST") {
+      const body = requestBody(event);
+      return json(200, await writeState(body.state || body));
     }
 
     if ((pathname === "/api/data" || pathname === "/data") && method === "GET") {
