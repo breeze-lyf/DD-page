@@ -1,0 +1,10 @@
+{
+  "name": "lzddd-workbench-cloud-api",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "@cloudbase/node-sdk": "^3.0.0",
+    "node-fetch": "^2.7.0"
+  }
+}

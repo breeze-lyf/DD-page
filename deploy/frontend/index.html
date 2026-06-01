@@ -1,0 +1,1830 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CBE 日化销售作战台</title>
+  <script>
+    if (location.protocol === "file:") {
+      location.replace(`https://lzddd-cbe-d7gsq0nmsa0fa05e0-1438068897.tcloudbaseapp.com/?v=local-redirect${location.hash || ""}`);
+    }
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+      --bg: #eeeae1;
+      --paper: rgba(250, 248, 242, .92);
+      --ink: #303431;
+      --muted: #777b73;
+      --line: #d8d1c5;
+      --sage: #728276;
+      --sage-deep: #4c6255;
+      --clay: #b9aaa0;
+      --rose: #a88a87;
+      --gold: #a59070;
+      --blue: #788795;
+      --shadow: 0 22px 60px rgba(72, 67, 58, .13);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 14%, rgba(255, 193, 225, .28), transparent 28%),
+        radial-gradient(circle at 86% 10%, rgba(131, 196, 229, .2), transparent 26%),
+        linear-gradient(125deg, rgba(238, 234, 225, .96), rgba(222, 229, 221, .92));
+    }
+    button, input, textarea, select { font: inherit; }
+    button { border: 0; cursor: pointer; }
+    .app { min-height: 100vh; display: grid; grid-template-columns: 260px minmax(0, 1fr); background: rgba(248, 246, 239, .86); backdrop-filter: blur(12px); }
+    aside { position: sticky; top: 0; height: 100vh; padding: 26px 18px; border-right: 1px solid rgba(48, 52, 49, .1); background: rgba(250, 248, 242, .9); }
+    .brand { margin-bottom: 24px; }
+    .brand strong { display: block; font-size: 22px; line-height: 1.2; }
+    .brand span, .muted, .meta, .empty { color: var(--muted); }
+    .brand span { display: block; margin-top: 8px; font-size: 13px; line-height: 1.5; }
+    .nav { display: grid; gap: 8px; }
+    .nav a { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; border-radius: 12px; color: var(--ink); text-decoration: none; font-weight: 700; }
+    .nav a.active { color: var(--sage-deep); background: rgba(114, 130, 118, .14); }
+    .nav-icon { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: white; background: linear-gradient(135deg, var(--sage), var(--clay)); font-size: 13px; flex: 0 0 auto; }
+    .side-note { position: absolute; left: 18px; right: 18px; bottom: 22px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; line-height: 1.7; }
+    main { min-width: 0; padding: 30px clamp(18px, 4vw, 48px) 44px; }
+    .topbar { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin-bottom: 20px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 10px; font-size: clamp(32px, 5vw, 54px); line-height: 1.05; letter-spacing: 0; }
+    h2 { font-size: 21px; margin-bottom: 12px; }
+    h3 { font-size: 18px; margin-bottom: 8px; }
+    .subtitle { max-width: 780px; margin-bottom: 0; color: #5f665f; font-size: 16px; line-height: 1.75; }
+    .today, .mode-card, .stat, .panel, .item, .source-card, .output-card { border: 1px solid rgba(48, 52, 49, .1); border-radius: 18px; background: var(--paper); box-shadow: var(--shadow); }
+    .today { min-width: 170px; padding: 14px 16px; }
+    .today strong { display: block; margin-top: 4px; font-size: 20px; }
+    .mode-strip, .stats, .server-tools, .output-grid, .source-grid { display: grid; gap: 14px; }
+    .mode-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 18px; }
+    .mode-card, .stat, .panel, .item, .source-card, .output-card { padding: 20px; }
+    .mode-card b { display: block; margin-bottom: 6px; color: var(--sage-deep); }
+    .mode-card span, .stat-label { color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 20px; }
+    .stat-value { display: block; margin-bottom: 4px; font-size: 30px; font-weight: 800; }
+    .workspace { display: grid; grid-template-columns: minmax(320px, 440px) minmax(0, 1fr); gap: 18px; align-items: start; }
+    form { display: grid; gap: 12px; }
+    label { display: grid; gap: 6px; font-size: 14px; font-weight: 800; }
+    input, textarea, select { width: 100%; min-height: 42px; padding: 10px 12px; border: 1px solid #d0c9bd; border-radius: 12px; outline: none; color: var(--ink); background: rgba(255, 255, 255, .68); }
+    textarea { min-height: 92px; resize: vertical; line-height: 1.6; }
+    input:focus, textarea:focus, select:focus { border-color: var(--sage); box-shadow: 0 0 0 4px rgba(114, 130, 118, .16); }
+    .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .actions, .toolbar, .item-links, .quick-terms, .utility-row, .toolbox-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .toolbar { margin-bottom: 12px; }
+    .toolbar input, .toolbar select { width: auto; flex: 1 1 180px; }
+    .primary, .secondary, .ghost { min-height: 42px; padding: 0 14px; border-radius: 12px; font-weight: 800; }
+    .primary { color: white; background: var(--sage-deep); }
+    .secondary { color: var(--sage-deep); background: rgba(114, 130, 118, .12); border: 1px solid rgba(114, 130, 118, .26); }
+    .ghost { color: var(--blue); background: transparent; }
+    .list, .cards { display: grid; gap: 12px; }
+    .cards, .output-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .source-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 14px; }
+    .server-tools { grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 14px 0; }
+    .item-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; margin-bottom: 8px; }
+    .item p, .source-card p { color: #555d57; line-height: 1.7; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; }
+    .tag { display: inline-flex; align-items: center; min-height: 24px; padding: 0 9px; border-radius: 999px; background: rgba(114, 130, 118, .12); color: var(--sage-deep); font-size: 12px; font-weight: 800; }
+    .tag.rose { background: rgba(168, 138, 135, .14); color: #8b6664; }
+    .tag.blue { background: rgba(120, 135, 149, .15); color: #526576; }
+    .insight-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+    .ops-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+    .ops-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+    .ops-card { min-height: 164px; }
+    .ops-card h3 { margin-bottom: 10px; }
+    .ops-card p { margin-bottom: 10px; }
+    .ops-meta { display: grid; gap: 8px; margin-top: 12px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .ops-meta b { color: var(--ink); }
+    .insight, .status-box, .term-result, .output-card pre { border: 1px solid rgba(48, 52, 49, .08); border-radius: 14px; background: rgba(255, 255, 255, .46); color: #444b46; }
+    .insight { min-height: 86px; padding: 12px; }
+    .insight b { display: block; margin-bottom: 6px; color: #3f4642; font-size: 13px; }
+    .insight span { color: #5e665f; font-size: 13px; line-height: 1.55; }
+    .status-box { min-height: 48px; padding: 12px; line-height: 1.65; }
+    .item-link, .source-card a, .service-banner a { color: var(--sage-deep); font-weight: 800; text-decoration: none; }
+    .item-links { margin-top: 12px; font-size: 14px; }
+    .output-card pre, .term-result { white-space: pre-wrap; word-break: break-word; line-height: 1.72; padding: 14px; font-size: 14px; }
+    .output-card pre { min-height: 200px; max-height: 380px; overflow: auto; margin: 12px 0 0; }
+    .term-result { min-height: 260px; }
+    .quick-terms { margin-top: 12px; }
+    .quick-terms button { min-height: 34px; padding: 0 12px; border-radius: 999px; background: rgba(114, 130, 118, .12); color: var(--sage-deep); font-weight: 800; }
+    .utility-row { margin: 0 0 18px; }
+    .utility-row a { min-height: 38px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 999px; color: var(--sage-deep); background: rgba(255, 255, 255, .5); border: 1px solid rgba(114, 130, 118, .18); text-decoration: none; font-weight: 800; }
+    .view-back { display: inline-flex; align-items: center; width: fit-content; min-height: 36px; margin-bottom: 14px; padding: 0 12px; border-radius: 999px; color: var(--sage-deep); background: rgba(255, 255, 255, .5); border: 1px solid rgba(114, 130, 118, .18); text-decoration: none; font-size: 13px; font-weight: 800; }
+    .toolbox { margin: 0 0 18px; padding: 18px 20px; border: 1px solid rgba(48, 52, 49, .1); border-radius: 18px; background: var(--paper); box-shadow: var(--shadow); }
+    .toolbox p { margin-bottom: 14px; color: var(--muted); line-height: 1.7; }
+    .toolbox-actions a { min-height: 44px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 12px; color: var(--sage-deep); background: rgba(255, 255, 255, .5); border: 1px solid rgba(114, 130, 118, .18); text-decoration: none; font-weight: 800; }
+    .service-banner { display: none; margin-bottom: 18px; padding: 14px 16px; border: 1px solid rgba(114, 130, 118, .26); border-radius: 14px; background: rgba(255, 255, 255, .45); line-height: 1.6; }
+    .empty { padding: 28px; border: 2px dashed rgba(114, 130, 118, .18); border-radius: 16px; text-align: center; color: var(--muted); background: rgba(255, 255, 255, .36); }
+    .hidden { display: none; }
+    .app.app-locked { display: none; }
+    .login-screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      position: relative;
+      z-index: 2;
+    }
+    .login-card {
+      width: min(520px, 100%);
+      padding: 30px;
+      border: 2px solid rgba(47, 127, 150, .28);
+      border-radius: 16px;
+      background:
+        linear-gradient(180deg, rgba(255, 245, 226, .96), rgba(255, 255, 255, .78)),
+        repeating-linear-gradient(90deg, rgba(255, 193, 225, .2) 0 10px, transparent 10px 22px);
+      box-shadow: 9px 9px 0 rgba(131, 196, 229, .22);
+    }
+    .login-kicker {
+      width: fit-content;
+      margin-bottom: 12px;
+      padding: 5px 10px;
+      border: 2px solid rgba(47, 127, 150, .22);
+      border-radius: 999px;
+      color: #253033;
+      background: rgba(255, 193, 225, .42);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .login-card h1 {
+      margin-bottom: 12px;
+      color: #253033;
+      font-size: clamp(30px, 5vw, 46px);
+      text-shadow: 2px 2px 0 rgba(255, 193, 225, .28);
+    }
+    .login-card p {
+      color: #4e6870;
+      line-height: 1.7;
+    }
+    .login-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .login-card .status-box {
+      margin-top: 12px;
+    }
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      aside { position: static; height: auto; padding: 16px; }
+      .nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .side-note { position: static; margin-top: 14px; }
+      .topbar, .workspace { display: grid; grid-template-columns: 1fr; }
+      .stats, .mode-strip, .source-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      main { padding: 20px 14px 34px; }
+      .nav, .stats, .mode-strip, .row, .cards, .output-grid, .server-tools, .source-grid, .insight-grid, .ops-grid, .ops-kpis { grid-template-columns: 1fr; }
+      .today { min-width: 0; }
+    }
+
+    /* Baroque study-room skin */
+    :root {
+      --bg: #efe7d6;
+      --paper: rgba(255, 251, 239, .93);
+      --ink: #2d251e;
+      --muted: #7b6b5b;
+      --line: #cdbf9e;
+      --sage: #586f63;
+      --sage-deep: #334f45;
+      --clay: #b89978;
+      --rose: #7d3445;
+      --gold: #b48a38;
+      --blue: #425c70;
+      --shadow: 0 28px 70px rgba(43, 32, 22, .18);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 18% 12%, rgba(180, 138, 56, .16), transparent 28%),
+        radial-gradient(circle at 82% 22%, rgba(125, 52, 69, .13), transparent 30%),
+        repeating-linear-gradient(45deg, rgba(88, 111, 99, .035) 0 2px, transparent 2px 18px),
+        linear-gradient(120deg, rgba(245, 238, 219, .96), rgba(229, 221, 203, .93));
+    }
+
+    .app {
+      background:
+        linear-gradient(90deg, rgba(55, 32, 38, .98) 0 260px, rgba(248, 242, 226, .88) 260px),
+        rgba(248, 242, 226, .88);
+    }
+
+    aside {
+      color: #f7efd9;
+      border-right: 1px solid rgba(203, 173, 100, .7);
+      background:
+        radial-gradient(circle at 22px 22px, rgba(203, 173, 100, .14) 0 2px, transparent 3px),
+        radial-gradient(circle at 54px 54px, rgba(255, 244, 208, .08) 0 2px, transparent 3px),
+        linear-gradient(180deg, #45242d, #261a20 68%, #1d1719);
+      background-size: 76px 76px, 76px 76px, auto;
+      box-shadow: inset -1px 0 0 rgba(255, 236, 180, .26);
+    }
+
+    .brand strong {
+      color: #fff5d9;
+      font-family: Georgia, "Times New Roman", "Songti SC", serif;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    .brand span,
+    .side-note {
+      color: rgba(255, 244, 220, .72);
+    }
+
+    .side-note {
+      border-top-color: rgba(203, 173, 100, .36);
+    }
+
+    .nav a {
+      color: rgba(255, 244, 220, .82);
+      border: 1px solid transparent;
+      border-radius: 8px;
+    }
+
+    .nav a.active,
+    .nav a:hover {
+      color: #fff9e8;
+      border-color: rgba(203, 173, 100, .42);
+      background: linear-gradient(90deg, rgba(180, 138, 56, .32), rgba(255, 244, 220, .08));
+      box-shadow: inset 0 0 0 1px rgba(255, 244, 220, .08);
+    }
+
+    .nav-icon {
+      color: #2d211a;
+      background: linear-gradient(135deg, #f3d885, #9d6f20 45%, #f5e2a5);
+      box-shadow: inset 0 0 0 1px rgba(255, 249, 226, .72), 0 4px 12px rgba(0, 0, 0, .18);
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: Georgia, "Times New Roman", "Songti SC", serif;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 880px;
+      color: #2b2119;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, .55);
+    }
+
+    h2 {
+      color: #4d2b22;
+    }
+
+    h2::after {
+      content: "";
+      display: block;
+      width: 74px;
+      height: 2px;
+      margin-top: 9px;
+      background: linear-gradient(90deg, var(--gold), rgba(125, 52, 69, .35), transparent);
+    }
+
+    .subtitle {
+      color: #6e5f50;
+    }
+
+    .today,
+    .mode-card,
+    .stat,
+    .panel,
+    .item,
+    .source-card,
+    .output-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(151, 113, 47, .4);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(255, 253, 246, .96), rgba(248, 239, 218, .9)),
+        radial-gradient(circle at 0 0, rgba(180, 138, 56, .12), transparent 32%);
+      box-shadow: 0 22px 58px rgba(59, 42, 25, .14), inset 0 0 0 1px rgba(255, 255, 255, .55);
+    }
+
+    .panel::before,
+    .mode-card::before,
+    .stat::before,
+    .output-card::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      top: 8px;
+      height: 9px;
+      opacity: .58;
+      background:
+        radial-gradient(circle at 7px 8px, rgba(180, 138, 56, .56) 0 3px, transparent 3.4px) repeat-x,
+        linear-gradient(90deg, transparent, rgba(125, 52, 69, .18), transparent);
+      background-size: 18px 9px, 100% 1px;
+      pointer-events: none;
+    }
+
+    .panel,
+    .mode-card,
+    .stat,
+    .output-card {
+      padding-top: 24px;
+    }
+
+    .stat-value {
+      color: #7d3445;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .mode-card b {
+      color: #7d3445;
+      font-family: Georgia, "Times New Roman", "Songti SC", serif;
+      font-size: 18px;
+    }
+
+    input,
+    textarea,
+    select {
+      border-color: rgba(151, 113, 47, .42);
+      border-radius: 8px;
+      background: rgba(255, 253, 244, .72);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .72);
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(180, 138, 56, .16), inset 0 1px 0 rgba(255, 255, 255, .72);
+    }
+
+    .primary {
+      color: #fff8dc;
+      border: 1px solid rgba(255, 238, 168, .42);
+      border-radius: 8px;
+      background: linear-gradient(135deg, #7d3445, #4a2530 48%, #9c7831);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), 0 8px 18px rgba(77, 43, 34, .2);
+    }
+
+    .secondary {
+      color: #4d2b22;
+      border-color: rgba(180, 138, 56, .42);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(255, 252, 240, .9), rgba(238, 226, 198, .78));
+    }
+
+    .ghost {
+      color: #7d3445;
+      border-radius: 8px;
+    }
+
+    .tag {
+      color: #4d2b22;
+      border: 1px solid rgba(180, 138, 56, .24);
+      background: rgba(246, 230, 190, .58);
+    }
+
+    .tag.rose {
+      color: #7d3445;
+      background: rgba(125, 52, 69, .1);
+    }
+
+    .tag.blue {
+      color: #425c70;
+      background: rgba(66, 92, 112, .11);
+    }
+
+    .insight,
+    .status-box,
+    .term-result,
+    .output-card pre {
+      border-color: rgba(151, 113, 47, .28);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(255, 254, 248, .64), rgba(242, 231, 206, .44)),
+        repeating-linear-gradient(0deg, rgba(77, 43, 34, .025) 0 1px, transparent 1px 8px);
+    }
+
+    .item-link,
+    .source-card a,
+    .service-banner a {
+      color: #7d3445;
+      text-decoration: underline;
+      text-decoration-color: rgba(180, 138, 56, .52);
+      text-underline-offset: 3px;
+    }
+
+    .quick-terms button {
+      color: #4d2b22;
+      border: 1px solid rgba(180, 138, 56, .34);
+      border-radius: 999px;
+      background: rgba(246, 230, 190, .58);
+    }
+
+    .service-banner,
+    .empty {
+      border-color: rgba(180, 138, 56, .32);
+      border-radius: 8px;
+      background: rgba(255, 251, 239, .66);
+    }
+
+    @media (max-width: 980px) {
+      .app {
+        background: rgba(248, 242, 226, .9);
+      }
+
+      aside {
+        height: auto;
+      }
+    }
+
+    /* Nimbus cafe pastel skin */
+    :root {
+      --pink: #ffc1e1;
+      --blue: #83c4e5;
+      --cream: #fff5e2;
+      --sand: #ebbd85;
+      --ink: #253033;
+      --muted: #6f8f96;
+      --line: #2b6f82;
+      --sage: #83c4e5;
+      --sage-deep: #2f7f96;
+      --rose: #ff8fc7;
+      --gold: #ebbd85;
+      --paper: rgba(255, 245, 226, .94);
+      --shadow: 0 18px 34px rgba(72, 118, 135, .16);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 8% 12%, rgba(255, 193, 225, .58), transparent 26%),
+        radial-gradient(circle at 92% 8%, rgba(131, 196, 229, .46), transparent 30%),
+        linear-gradient(90deg, rgba(37, 48, 51, .08) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(37, 48, 51, .08) 1px, transparent 1px),
+        linear-gradient(180deg, #ffc1e1 0 180px, #fff5e2 180px 100%);
+      background-size: auto, auto, 84px 84px, 84px 84px, auto;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: .32;
+      background-image:
+        radial-gradient(#1f2425 1px, transparent 1.5px),
+        radial-gradient(#1f2425 1px, transparent 1.5px);
+      background-position: 12px 18px, 47px 61px;
+      background-size: 94px 94px, 137px 137px;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 245, 226, .78);
+      backdrop-filter: none;
+    }
+
+    aside {
+      color: var(--ink);
+      border-right: 2px dashed rgba(47, 127, 150, .35);
+      background:
+        linear-gradient(180deg, rgba(255, 193, 225, .95), rgba(255, 245, 226, .95)),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, .32) 0 5px, transparent 5px 14px);
+      box-shadow: none;
+    }
+
+    .brand strong {
+      color: #2c3336;
+      font-family: "Comic Sans MS", "Marker Felt", "PingFang SC", sans-serif;
+      font-size: 25px;
+      font-weight: 800;
+      text-shadow: 2px 2px 0 rgba(255, 245, 226, .9);
+    }
+
+    .brand span,
+    .side-note {
+      color: rgba(37, 48, 51, .68);
+    }
+
+    .side-note {
+      border-top: 2px dashed rgba(47, 127, 150, .28);
+    }
+
+    .nav a {
+      color: #2c3336;
+      border: 2px solid transparent;
+      border-radius: 999px;
+      background: rgba(255, 245, 226, .56);
+    }
+
+    .nav a.active,
+    .nav a:hover {
+      color: #253033;
+      border-color: rgba(47, 127, 150, .48);
+      background: linear-gradient(90deg, rgba(131, 196, 229, .72), rgba(255, 245, 226, .72));
+      box-shadow: 4px 4px 0 rgba(255, 143, 199, .2);
+    }
+
+    .nav-icon {
+      color: #fff5e2;
+      background: #83c4e5;
+      border: 2px solid #2f7f96;
+      box-shadow: 2px 2px 0 rgba(255, 143, 199, .45);
+    }
+
+    main {
+      position: relative;
+    }
+
+    .topbar {
+      min-height: 210px;
+      margin: -30px calc(clamp(18px, 4vw, 48px) * -1) 20px;
+      padding: 44px clamp(18px, 4vw, 48px) 28px;
+      background:
+        radial-gradient(circle at 26% 42%, rgba(255, 245, 226, .56), transparent 18%),
+        linear-gradient(180deg, #ffc1e1, #ffc1e1);
+      border-bottom: 3px solid rgba(47, 127, 150, .16);
+    }
+
+    .topbar::before,
+    .topbar::after {
+      position: absolute;
+      color: #fff5e2;
+      font-family: "Comic Sans MS", "Marker Felt", cursive;
+      font-size: clamp(48px, 8vw, 92px);
+      font-weight: 800;
+      line-height: 1;
+      opacity: .85;
+      pointer-events: none;
+    }
+
+    .topbar::before {
+      content: "CBE";
+      right: clamp(24px, 8vw, 110px);
+      top: 42px;
+      transform: rotate(-3deg);
+    }
+
+    .topbar::after {
+      content: "sales";
+      right: clamp(34px, 9vw, 130px);
+      top: 110px;
+      transform: rotate(2deg);
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Comic Sans MS", "Marker Felt", "PingFang SC", sans-serif;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 650px;
+      color: #fff5e2;
+      font-size: clamp(34px, 4.8vw, 62px);
+      text-shadow: 3px 3px 0 rgba(47, 127, 150, .18);
+    }
+
+    h2 {
+      color: #253033;
+    }
+
+    h2::after {
+      content: "";
+      display: block;
+      width: 96px;
+      height: 7px;
+      margin-top: 7px;
+      border-radius: 999px;
+      background: repeating-linear-gradient(90deg, #ffc1e1 0 12px, #fff5e2 12px 18px);
+      border: 1px solid rgba(47, 127, 150, .18);
+    }
+
+    .topbar .subtitle {
+      color: rgba(255, 245, 226, .88);
+      max-width: 620px;
+    }
+
+    .view .subtitle,
+    .panel .subtitle {
+      color: #4e6870;
+      max-width: 820px;
+      text-shadow: none;
+    }
+
+    .today,
+    .mode-card,
+    .stat,
+    .panel,
+    .item,
+    .source-card,
+    .output-card {
+      overflow: visible;
+      border: 2px solid rgba(47, 127, 150, .26);
+      border-radius: 12px;
+      background:
+        linear-gradient(180deg, rgba(255, 245, 226, .96), rgba(255, 249, 237, .92)),
+        repeating-linear-gradient(0deg, rgba(47, 127, 150, .04) 0 1px, transparent 1px 8px);
+      box-shadow: 7px 7px 0 rgba(131, 196, 229, .22);
+    }
+
+    .today {
+      color: #253033;
+      background: #fff5e2;
+    }
+
+    .panel::before,
+    .mode-card::before,
+    .stat::before,
+    .output-card::before {
+      content: none;
+    }
+
+    .mode-card b,
+    .stat-value {
+      color: #ff8fc7;
+      font-family: "Comic Sans MS", "Marker Felt", "PingFang SC", sans-serif;
+      text-shadow: 1px 1px 0 #fff5e2;
+    }
+
+    .mode-card:nth-child(2),
+    .stat:nth-child(2n),
+    .source-card:nth-child(2n) {
+      box-shadow: 7px 7px 0 rgba(255, 193, 225, .28);
+    }
+
+    input,
+    textarea,
+    select {
+      border: 2px solid rgba(47, 127, 150, .26);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .72);
+      box-shadow: none;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #83c4e5;
+      box-shadow: 0 0 0 4px rgba(131, 196, 229, .24);
+    }
+
+    .primary {
+      color: #253033;
+      border: 2px solid #2f7f96;
+      border-radius: 999px;
+      background: #83c4e5;
+      box-shadow: 3px 3px 0 rgba(255, 143, 199, .55);
+    }
+
+    .secondary,
+    .ghost {
+      color: #253033;
+      border: 2px solid rgba(47, 127, 150, .26);
+      border-radius: 999px;
+      background: #fff5e2;
+      box-shadow: 3px 3px 0 rgba(255, 193, 225, .34);
+    }
+
+    .tag {
+      color: #253033;
+      border: 1px solid rgba(47, 127, 150, .28);
+      background: rgba(255, 193, 225, .34);
+    }
+
+    .tag.rose {
+      color: #253033;
+      background: rgba(255, 143, 199, .34);
+    }
+
+    .tag.blue {
+      color: #253033;
+      background: rgba(131, 196, 229, .42);
+    }
+
+    .insight,
+    .status-box,
+    .term-result,
+    .output-card pre {
+      border: 2px dashed rgba(47, 127, 150, .25);
+      border-radius: 10px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, .62), rgba(255, 245, 226, .65)),
+        repeating-linear-gradient(90deg, rgba(255, 193, 225, .18) 0 8px, transparent 8px 18px);
+    }
+
+    .item-link,
+    .source-card a,
+    .service-banner a {
+      color: #2f7f96;
+      text-decoration: underline;
+      text-decoration-color: #ff8fc7;
+      text-underline-offset: 3px;
+    }
+
+    .quick-terms button {
+      color: #253033;
+      border: 2px solid rgba(47, 127, 150, .25);
+      background: rgba(255, 193, 225, .42);
+      box-shadow: 2px 2px 0 rgba(131, 196, 229, .34);
+    }
+
+    .utility-row a {
+      color: #253033;
+      border: 2px solid rgba(47, 127, 150, .25);
+      background: #fff5e2;
+      box-shadow: 3px 3px 0 rgba(255, 193, 225, .3);
+    }
+
+    .view-back {
+      color: #253033;
+      border: 2px solid rgba(47, 127, 150, .26);
+      background: #83c4e5;
+      box-shadow: 3px 3px 0 rgba(255, 193, 225, .36);
+    }
+
+    .toolbox {
+      border: 2px dashed rgba(47, 127, 150, .28);
+      border-radius: 12px;
+      background:
+        linear-gradient(180deg, rgba(255, 245, 226, .9), rgba(255, 255, 255, .62)),
+        repeating-linear-gradient(90deg, rgba(131, 196, 229, .12) 0 1px, transparent 1px 18px);
+      box-shadow: 7px 7px 0 rgba(255, 193, 225, .24);
+    }
+
+    .toolbox p {
+      color: #4e6870;
+    }
+
+    .toolbox-actions a {
+      color: #253033;
+      border: 2px solid rgba(47, 127, 150, .28);
+      border-radius: 999px;
+      background: #83c4e5;
+      box-shadow: 3px 3px 0 rgba(255, 193, 225, .42);
+    }
+
+    .service-banner,
+    .empty {
+      border: 2px dashed rgba(47, 127, 150, .3);
+      border-radius: 12px;
+      background: rgba(255, 245, 226, .8);
+    }
+
+    .sticker-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 16px;
+      margin: -6px 0 22px;
+      padding: 16px;
+      border: 2px dashed rgba(47, 127, 150, .28);
+      background: rgba(255, 255, 255, .62);
+    }
+
+    .sticker-card {
+      min-height: 108px;
+      display: grid;
+      place-items: center;
+      gap: 6px;
+      color: #6f8f96;
+      font-family: "Comic Sans MS", "Marker Felt", cursive;
+      text-align: center;
+    }
+
+    .sticker-art {
+      position: relative;
+      display: block;
+      width: 86px;
+      height: 62px;
+    }
+
+    .sticker-art.mitten::before {
+      content: "";
+      position: absolute;
+      left: 16px;
+      top: 8px;
+      width: 42px;
+      height: 48px;
+      border: 3px solid #2f7f96;
+      border-radius: 22px 22px 18px 18px;
+      background: repeating-linear-gradient(90deg, #fff5e2 0 8px, #83c4e5 8px 14px);
+      transform: rotate(-8deg);
+    }
+
+    .sticker-art.mitten::after {
+      content: "";
+      position: absolute;
+      left: 20px;
+      bottom: 2px;
+      width: 40px;
+      height: 10px;
+      border: 2px solid #2f7f96;
+      background: #ffc1e1;
+      transform: rotate(-8deg);
+    }
+
+    .sticker-art.cake::before {
+      content: "";
+      position: absolute;
+      left: 16px;
+      top: 26px;
+      width: 54px;
+      height: 24px;
+      border: 3px solid #2f7f96;
+      border-radius: 8px;
+      background: linear-gradient(#fff5e2 0 35%, #ffc1e1 35% 58%, #ebbd85 58%);
+    }
+
+    .sticker-art.cake::after {
+      content: "";
+      position: absolute;
+      left: 40px;
+      top: 12px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50% 50% 45% 45%;
+      border: 2px solid #2f7f96;
+      background: #ff6f75;
+    }
+
+    .sticker-art.coffee::before {
+      content: "";
+      position: absolute;
+      left: 15px;
+      top: 17px;
+      width: 48px;
+      height: 34px;
+      border: 3px solid #2f7f96;
+      border-radius: 6px 6px 14px 14px;
+      background: repeating-linear-gradient(90deg, #fff5e2 0 9px, #83c4e5 9px 16px);
+    }
+
+    .sticker-art.coffee::after {
+      content: "";
+      position: absolute;
+      right: 8px;
+      top: 24px;
+      width: 20px;
+      height: 19px;
+      border: 3px solid #2f7f96;
+      border-left: 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .sticker-art.bread::before,
+    .sticker-art.bread::after {
+      content: "";
+      position: absolute;
+      top: 16px;
+      width: 32px;
+      height: 32px;
+      border: 7px solid #ebbd85;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 2px rgba(47, 127, 150, .2);
+    }
+
+    .sticker-art.bread::before {
+      left: 14px;
+      transform: rotate(-18deg);
+    }
+
+    .sticker-art.bread::after {
+      right: 14px;
+      transform: rotate(18deg);
+    }
+
+    @media (max-width: 980px) {
+      .app {
+        background: rgba(255, 245, 226, .86);
+      }
+
+      aside {
+        background: linear-gradient(180deg, #ffc1e1, #fff5e2);
+        color: var(--ink);
+      }
+
+      .topbar {
+        margin: -20px -14px 20px;
+      }
+
+      .sticker-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .ops-grid,
+      .ops-kpis {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="login-screen hidden" id="loginScreen" aria-label="账号密码登录">
+    <form class="login-card" id="loginForm" novalidate>
+      <div class="login-kicker">lzddd 的私人宝典</div>
+      <h1>登录工作台</h1>
+      <p>登录功能已暂停。现在会直接进入工作台，新增客户、随记、事项会自动保存到云数据库，其他电脑打开同一网址也能看到。</p>
+      <label>账号<input id="loginAccount" autocomplete="username" placeholder="例如 lzddd"></label>
+      <label>密码<input id="loginPassword" type="password" autocomplete="current-password" placeholder="输入你设置的密码"></label>
+      <div class="login-actions">
+        <button class="primary" type="submit">进入工作台</button>
+        <button class="secondary" id="clearLoginButton" type="button">清除本机登录</button>
+      </div>
+      <div class="status-box" id="loginStatus">账号和密码只保存在当前浏览器里，用来访问你的云端工作台数据。</div>
+    </form>
+  </section>
+
+  <div class="app app-locked" id="appRoot">
+    <aside>
+      <div class="brand">
+        <strong>CBE 日化销售作战台</strong>
+        <span>看资讯 · 写随记 · 管客户 · 做产出</span>
+      </div>
+      <nav class="nav" aria-label="主导航">
+        <a class="active" href="#view-dashboard" data-view="dashboard"><span class="nav-icon">总</span>总览</a>
+        <a href="#view-sources" data-view="sources"><span class="nav-icon">讯</span>资讯</a>
+        <a href="#view-notes" data-view="notes"><span class="nav-icon">记</span>随记</a>
+        <a href="#view-clients" data-view="clients"><span class="nav-icon">客</span>客户</a>
+        <a href="#view-output" data-view="output"><span class="nav-icon">出</span>产出</a>
+      </nav>
+      <div class="side-note">事项清单和术语助手放进总览工具区，不再挤在主导航里。</div>
+    </aside>
+
+    <main>
+      <section class="topbar">
+        <div>
+          <h1>lzddd的私人宝典</h1>
+          <p class="subtitle">一个给日化销售新人用的 AI 工作台：成熟项目做客户经营，新项目做拓客增长，同时沉淀行业知识和可交付产出。</p>
+        </div>
+        <div class="today"><span class="stat-label">今天</span><strong id="todayText"></strong></div>
+      </section>
+
+      <section class="service-banner" id="serviceBanner">
+        你现在是用文件方式打开，自动抓取和后台保存不能运行。请切换到
+        <a id="serviceBannerLink" href="http://127.0.0.1:8789/#view-dashboard">本地服务版</a>。
+      </section>
+
+      <section class="sticker-row" aria-label="工作台配件">
+        <div class="sticker-card"><span class="sticker-art mitten" aria-hidden="true"></span><span>baking</span></div>
+        <div class="sticker-card"><span class="sticker-art cake" aria-hidden="true"></span><span>dessert</span></div>
+        <div class="sticker-card"><span class="sticker-art coffee" aria-hidden="true"></span><span>coffee</span></div>
+        <div class="sticker-card"><span class="sticker-art bread" aria-hidden="true"></span><span>bread</span></div>
+      </section>
+
+      <section class="view" id="view-dashboard">
+        <div class="mode-strip">
+          <article class="mode-card"><b>续签模式</b><span>上海 CBE 老客户维护、合同节点、付款状态、续签风险、升级机会。</span></article>
+          <article class="mode-card"><b>拓客模式</b><span>杭州美博会和巡展开发线索，判断项目匹配度，生成首触达和跟进话术。</span></article>
+          <article class="mode-card"><b>随记模式</b><span>看完资讯后随手写想法，系统帮你总结趋势、机会和下一步。</span></article>
+        </div>
+        <section class="toolbox" aria-label="工作台工具箱">
+          <h2>工具箱</h2>
+          <p>不放进主导航，但你会经常用到：一个管固定服务动作，一个随时解释行业术语。</p>
+          <div class="toolbox-actions">
+            <a href="#view-ops" data-view="ops">事项清单</a>
+            <a href="#view-terms" data-view="terms">术语助手</a>
+          </div>
+        </section>
+        <section class="stats" aria-label="概览数据">
+          <div class="stat"><span class="stat-value" id="renewalCount">0</span><span class="stat-label">续签客户</span></div>
+          <div class="stat"><span class="stat-value" id="prospectCount">0</span><span class="stat-label">拓客线索</span></div>
+          <div class="stat"><span class="stat-value" id="riskCount">0</span><span class="stat-label">风险/待推进</span></div>
+          <div class="stat"><span class="stat-value" id="followCount">0</span><span class="stat-label">待跟进</span></div>
+        </section>
+        <div class="workspace">
+          <section class="panel"><h2>今天先做什么</h2><div class="list" id="todayActionList"></div></section>
+          <section class="panel"><h2>销售作战视图</h2><div class="list" id="pipelineList"></div></section>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-clients">
+        <div class="workspace">
+          <section class="panel">
+            <h2>新增客户 / 线索</h2>
+            <form id="clientForm">
+              <label>公司名称<input name="company" required placeholder="例如：某某日化品牌 / 某某渠道商"></label>
+              <div class="row">
+                <label>客户用途<select name="salesMode"><option>续签客户</option><option>拓客线索</option><option>两者都可能</option></select></label>
+                <label>适配项目<select name="project"><option>上海 CBE</option><option>杭州美博会</option><option>巡展</option><option>其他项目</option></select></label>
+              </div>
+              <div class="row"><label>联系人<input name="contact" placeholder="姓名"></label><label>职位<input name="role" placeholder="市场负责人 / 采购 / 创始人"></label></div>
+              <div class="row">
+                <label>客户类型<select name="type"><option>品牌方</option><option>渠道商</option><option>代理商</option><option>OEM/ODM</option><option>包材/原料</option><option>服务商</option></select></label>
+                <label>重点品类<input name="categories" placeholder="洗护、口腔、家清、香氛、身体护理"></label>
+              </div>
+              <div class="row">
+                <label>合同/转化阶段<select name="stage"><option>待触达</option><option>已触达</option><option>有兴趣</option><option>待报价</option><option>合同待发</option><option>合同审批</option><option>待付款</option><option>已签约</option></select></label>
+                <label>风险等级<select name="risk"><option>低</option><option>中</option><option>高</option></select></label>
+              </div>
+              <div class="row">
+                <label>去年面积/金额<input name="history" placeholder="续签客户可填：18㎡ / 费用 / 展位位置"></label>
+                <label>合作潜力<select name="potential"><option>高</option><option>中</option><option>低</option></select></label>
+              </div>
+              <label>下次跟进<input name="nextFollow" type="date"></label>
+              <label>客户需求/备注<textarea name="notes" placeholder="续签顾虑、拓客切入点、预算、项目匹配、需要主管支持等"></textarea></label>
+              <button class="primary" type="submit">保存客户</button>
+            </form>
+          </section>
+          <section>
+            <div class="toolbar">
+              <input id="clientSearch" placeholder="搜索公司、联系人、品类、备注">
+              <select id="clientModeFilter"><option value="">全部用途</option><option>续签客户</option><option>拓客线索</option><option>两者都可能</option></select>
+              <select id="clientProjectFilter"><option value="">全部项目</option><option>上海 CBE</option><option>杭州美博会</option><option>巡展</option><option>其他项目</option></select>
+            </div>
+            <div class="list" id="clientList"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-ops">
+        <section class="panel">
+          <a class="view-back" href="#view-dashboard" data-view="dashboard">返回总览</a>
+          <h2>CBE 服务事项提醒</h2>
+          <p class="subtitle">根据《CBE 经济年度服务考核办法》提炼：把容易漏的客户服务动作变成固定提醒，并把每次完成情况沉淀成记录。</p>
+          <div class="ops-kpis">
+            <article class="insight"><b>考核周期</b><span>CBE 经济年度：以上海展开幕年份为基准，通常从前一年 11 月 1 日到当年 10 月 31 日。</span></article>
+            <article class="insight"><b>计分结构</b><span>服务考核满分 100 分，其中销售业绩 20 分，服务质量 80 分。</span></article>
+            <article class="insight"><b>新人用法</b><span>把每个客户的展讯、问卷、微信、走访、云快选和合同动作及时记录，月底复盘不会慌。</span></article>
+          </div>
+        </section>
+        <section class="ops-grid" id="opsTaskList" aria-label="固定事项清单"></section>
+        <div class="workspace" style="margin-top: 18px;">
+          <section class="panel">
+            <h2>新增事项记录</h2>
+            <form id="opsRecordForm">
+              <label>事项类型<select name="task" id="opsTaskSelect"></select></label>
+              <div class="row">
+                <label>项目<select name="project"><option>上海 CBE</option><option>杭州美博会</option><option>巡展</option><option>通用事项</option></select></label>
+                <label>完成日期<input name="completedAt" type="date"></label>
+              </div>
+              <label>客户 / 对象<input name="target" placeholder="客户公司、部门、客户群或资料对象"></label>
+              <label>完成内容<textarea name="detail" required placeholder="例如：已向某客户发送 3 条展讯；已完成问卷；已上传云快选资料；已完成走访并提交 OA。"></textarea></label>
+              <label>证明材料 / 链接<input name="evidence" placeholder="截图位置、OA 编号、SF 记录、表格链接等"></label>
+              <label>下一步<textarea name="nextStep" placeholder="例如：明天补发资料、提醒客户确认、月底汇总给主管。"></textarea></label>
+              <button class="primary" type="submit">保存事项记录</button>
+            </form>
+          </section>
+          <section>
+            <div class="toolbar">
+              <input id="opsSearch" placeholder="搜索事项、客户、证明材料、下一步">
+              <select id="opsRecordTaskFilter"><option value="">全部事项</option></select>
+            </div>
+            <div class="list" id="opsRecordList"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-output">
+        <section class="panel">
+          <h2>产出中心</h2>
+          <p class="subtitle">自动生成续签日报、拓客日报、风险清单、客户话术和给主管看的工作汇报。</p>
+          <div class="server-tools"><button class="primary" id="refreshOutputButton" type="button">刷新产出</button><button class="secondary" id="copyAllOutputButton" type="button">复制全部</button><button class="secondary" id="exportOutputButton" type="button">下载 Markdown</button></div>
+          <div class="status-box" id="outputStatus">产出会根据当前记录自动生成。</div>
+        </section>
+        <div class="output-grid" id="outputList"></div>
+      </section>
+
+      <section class="view hidden" id="view-notes">
+        <div class="workspace">
+          <section class="panel">
+            <h2>新增随记</h2>
+            <form id="noteForm">
+              <label>随记标题<input name="title" placeholder="例如：头皮护理品牌为什么都在线下发力"></label>
+              <div class="row">
+                <label>想法方向<select name="category"><option>客户话题</option><option>拓客机会</option><option>续签提醒</option><option>行业观察</option><option>主管汇报</option><option>暂时疑问</option></select></label>
+                <label>相关对象<select name="stakeholder"><option>品牌方</option><option>渠道商</option><option>供应链</option><option>线下零售</option><option>主管/团队</option></select></label>
+              </div>
+              <label>相关资讯 / 来源<input name="source" placeholder="文章标题、链接、公众号、客户聊天、现场观察都可以"></label>
+              <label>我的随记<textarea name="body" required placeholder="不用写得很正式，把你想到的东西直接丢进来。"></textarea></label>
+              <label>我想拿它做什么<textarea name="nextStep" placeholder="例如：转成客户问题、下次拜访开场、主管汇报观点、后续继续查资料。"></textarea></label>
+              <div class="actions"><button class="primary" type="submit">保存随记</button><button class="secondary" id="loadSampleNote" type="button">载入示例</button><button class="secondary" id="refreshNoteInsightButton" type="button">刷新总结</button></div>
+            </form>
+          </section>
+          <section>
+            <section class="panel" style="margin-bottom: 14px;">
+              <h2>随记总结</h2>
+              <div class="term-result" id="noteInsight">写下几条随记后，这里会帮你总结最近关注点、可转成的话术和下一步建议。</div>
+            </section>
+            <div class="toolbar"><input id="noteSearch" placeholder="搜索标题、来源、想法、下一步"><select id="noteCategoryFilter"><option value="">全部方向</option><option>客户话题</option><option>拓客机会</option><option>续签提醒</option><option>行业观察</option><option>主管汇报</option><option>暂时疑问</option></select></div>
+            <div class="list" id="noteList"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-terms">
+        <div class="workspace">
+          <section class="panel">
+            <a class="view-back" href="#view-dashboard" data-view="dashboard">返回总览</a>
+            <h2>术语助手</h2>
+            <form id="termForm">
+              <label>你想问什么<textarea name="question" required placeholder="例如：KA渠道是什么？动销是什么意思？OEM和ODM有什么区别？"></textarea></label>
+              <div class="actions"><button class="primary" type="submit">解释给我听</button><button class="secondary" id="saveTermButton" type="button">保存为知识卡片</button></div>
+            </form>
+            <div class="quick-terms" id="quickTerms"></div>
+          </section>
+          <section class="panel">
+            <h2>解释结果</h2>
+            <div class="term-result" id="termResult">输入一个日化、美妆、会展或渠道术语，我会按“是什么、为什么重要、销售怎么用”解释。</div>
+            <form id="aiConfigForm" style="margin-top: 14px;">
+              <label>AI 接口地址<input name="aiEndpoint" placeholder="例如 https://api.deepseek.com/chat/completions"></label>
+              <div class="row">
+                <label>模型名称<input name="aiModel" placeholder="例如 gpt-4o-mini / deepseek-chat / qwen-plus"></label>
+                <label>AI 接口令牌<input name="aiToken" placeholder="只保存在本地后台，不写进网页请求"></label>
+              </div>
+              <button class="secondary" type="submit">保存本地 AI 中转设置</button>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-sources">
+        <section class="panel">
+          <h2>今日资讯</h2>
+          <p class="subtitle">大陆网络优先：默认只抓国内行业媒体、监管和渠道动态；海外资讯改成单独按钮，避免没有 VPN 时卡住。</p>
+          <div class="server-tools"><button class="primary" id="syncNewsButton" type="button">抓取国内资讯</button><button class="secondary" id="syncGlobalNewsButton" type="button">抓取海外参考</button><button class="secondary" id="checkRemindersButton" type="button">检查客户跟进</button></div>
+          <div class="status-box" id="serverStatus">云端自动同步已开启：新增客户、随记、事项和抓取资讯后，会实时保存到 CloudBase。换电脑只需要打开正式网址即可看到同一份数据。登录功能已临时暂停。</div>
+        </section>
+        <section class="panel" style="margin-top: 14px;"><h2>已抓取资讯</h2><div class="list" id="fetchedNewsList"></div></section>
+        <div class="source-grid" id="sourceList"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./cloud-config.js"></script>
+  <script>
+    if (location.protocol === "file:" && window.LZDDD_APP_URL) {
+      const targetUrl = `${window.LZDDD_APP_URL}${location.search || "?v=cloud"}${location.hash || ""}`;
+      window.location.replace(targetUrl);
+    }
+    const storageKey = "cbe-daily-chemical-sales-v2";
+    const legacyStorageKey = "cbe-beauty-learning-v1";
+    const hasServer = location.protocol === "http:" || location.protocol === "https:";
+    const apiBase = String(window.LZDDD_API_BASE || "").replace(/\/$/, "");
+    const cloudAccountStorageKey = "lzddd-cloud-account";
+    const cloudTokenStorageKey = "lzddd-cloud-access-token";
+    const loginPaused = true;
+    const isCloudMode = Boolean(apiBase);
+    let cloudAuthReady = loginPaused || !isCloudMode;
+    let cloudRefreshTimer = null;
+    const today = new Date();
+    const dateFormat = new Intl.DateTimeFormat("zh-CN", { month: "long", day: "numeric", weekday: "short" });
+    const servicePort = location.port || "8789";
+    const termLibrary = {
+      "KA渠道": "KA 是 Key Account，通常指大型重点零售客户，如大型商超、连锁系统或重点平台。销售中要关注采购流程、账期、入场成本、促销资源和动销支持。",
+      "CS渠道": "CS 渠道指化妆品专营店渠道，包括区域连锁美妆店、单体专营店和专业零售门店。它重视导购、体验和复购。",
+      "动销": "动销指产品真正卖得动，不只是铺货。渠道商会关注新品有没有内容、培训、促销、复购和利润空间。",
+      "铺货": "铺货是产品进入门店、代理网络或平台。铺货只是第一步，后续还要解决陈列、导购、促销、复购和库存周转。",
+      "OEM": "OEM 是代工生产，品牌方提出需求，工厂按要求生产。适合理解供应链客户和新品牌开发需求。",
+      "ODM": "ODM 是工厂提供配方、设计或产品方案，品牌方选择后贴牌销售。相比 OEM 更强调研发和产品方案能力。",
+      "私域": "私域是品牌或渠道自己能反复触达的用户池，如企微、社群、会员、小程序。它能帮助复购和精细化运营。",
+      "功效宣称": "功效宣称是品牌对产品作用的表达，如保湿、修护、抗皱、防晒等，需要注意合规依据。",
+      "家清": "家清是家庭清洁品类，包括洗衣、清洁、消毒、除味、家居香氛等。杭州和巡展拓客时，家清品牌可能更关注渠道下沉和区域代理。",
+      "头皮护理": "头皮护理是洗护细分趋势，围绕控油、去屑、防脱、舒缓、蓬松等需求。适合转成日化品牌邀约切入点。"
+    };
+    const quickTermList = ["KA渠道", "CS渠道", "动销", "铺货", "OEM", "ODM", "私域", "功效宣称", "家清", "头皮护理"];
+    const sources = [
+      { name: "CBE 官方渠道", type: "展会与活动", url: "https://www.cbebaiwen.com/", note: "展商、买家、活动和行业议题。" },
+      { name: "青眼情报", type: "行业数据", url: "https://www.iqyqb.com/", note: "美妆市场洞察、品类数据和研报。" },
+      { name: "青眼官网", type: "行业媒体", url: "https://www.iqingyan.cn/", note: "中国化妆品行业新闻和品牌动态。" },
+      { name: "品观网", type: "行业媒体", url: "https://www.pinguan.com/", note: "美妆零售、渠道、品牌和产业链动态。" },
+      { name: "化妆品财经在线", type: "行业媒体", url: "https://www.cbo.cn/", note: "渠道、品牌经营和产业变化。" },
+      { name: "国家药监局", type: "法规政策", url: "https://www.nmpa.gov.cn/", note: "化妆品监管、备案、功效宣称。" }
+      ,
+      { name: "C2CC 传媒", type: "行业媒体", url: "https://www.c2cc.cn/", note: "中国化妆品领域财经媒体，适合看产业和品牌动态。" },
+      { name: "化妆品资讯", type: "行业资讯", url: "https://www.cosmetic-news.net/", note: "适合补充国内产品、品牌和洗护个护动态。" }
+    ];
+    const opsTasks = [
+      { title: "SF 潜在客户录入", cadence: "每季度 / 项目节点", scope: "潜在客户与外呼线索", standard: "潜客信息要及时、准确录入 SF 潜在客户模块；阶段性外呼数据下达后，负责人需在 3 个工作日内核查录入情况。", evidence: "SF 记录、OA 检查结果", weight: "服务质量 15 分" },
+      { title: "客户续签问卷", cadence: "上海 / 杭州开展期间", scope: "全部签约客户", standard: "上海展现场问卷不少于 40 家，重点覆盖 E1 至 E8；杭州展问卷回收率不低于签约客户数的 50%。", evidence: "问卷扫描件、OA 上报记录", weight: "服务质量 5 分" },
+      { title: "展讯发送每位客户", cadence: "CBE 经济年度", scope: "本人签约客户", standard: "向每位签约客户发送与当届展会相关的信息，形式可包含图片、微信文章、视频等，每位客户不少于 5 条。", evidence: "聊天截图、发送清单", weight: "服务质量 5 分" },
+      { title: "好企业 / 好品牌资料收集", cadence: "开幕前 1 个月", scope: "公司批准名单", standard: "按三大市场要求向客户收集完整资料，图片清晰度需达到对应像素要求。", evidence: "客户资料包、市场汇总表", weight: "服务质量 5 分" },
+      { title: "合同 / 发票 / 终止函规范", cadence: "每月 / 关键节点", scope: "盖章合同、催款、终止函、发票", standard: "客户盖章合同回传后，核对无误并在 1 天内扫描上传 SF，状态改为回传；催款通知、合同终止函、发票申请按流程及时处理。", evidence: "SF 附件、授权邮箱、OA 留档", weight: "服务质量 5 分" },
+      { title: "云快选资料上传", cadence: "开幕前 1 日 12:00", scope: "全部签约客户", standard: "在云快选上传客户企业信息与至少 1 件产品信息，上传率不低于签约客户数的 80%。", evidence: "云快选后台截图、上传清单", weight: "服务质量 15 分" },
+      { title: "云快选裂变工具", cadence: "展会结束前", scope: "全部签约客户", standard: "邀请客户使用公司指定线上裂变工具邀约买家，成功邀约买家的客户数不低于已签约客户数的 10%。", evidence: "裂变工具数据、客户邀约截图", weight: "服务质量 5 分" },
+      { title: "工作日资讯分享", cadence: "每个工作日", scope: "个人日常学习", standard: "除出差和请假外，每个工作日在企业微信资讯分享群至少分享 1 条行业资讯，月度统计完成情况。", evidence: "企微群分享截图、月度统计", weight: "服务质量 5 分" },
+      { title: "添加客户微信", cadence: "签约后 / 年度抽查", scope: "全部签约客户", standard: "每家签约客户至少添加 1 位工作微信和企业微信对接联系人，并按要求备注客户公司名及联系人。", evidence: "企微联系人、备注截图", weight: "服务质量 5 分" },
+      { title: "客户走访", cadence: "CBE 经济年度", scope: "重点客户与潜力客户", standard: "完整考核周期内走访不少于 60 家客户；走访记录需包含时间、地点、参与人员、客户信息、客户需求、洽谈项目和市场趋势。", evidence: "走访小结、照片、OA 周报", weight: "服务质量 15 分" }
+    ];
+    const starterData = {
+      news: [{ id: createId(), title: "头皮护理和香氛个护成为日化客户沟通切入点", category: "市场趋势", stakeholder: "品牌方", source: "示例记录", summary: "洗护和个护品牌正在从基础清洁转向更细分的功效、情绪和体验场景。", reflection: "续签客户可用作升级参展主题；杭州/巡展拓客可用作新客户开场话题。", talkingPoint: "今年日化买家对头皮护理、香氛个护和家清细分趋势更敏感，您今年是否有计划加强这类渠道曝光？", createdAt: today.toISOString() }],
+      notes: [],
+      knowledge: [],
+      clients: [{ id: createId(), company: "示例：上海 CBE 日化续签客户", contact: "王经理", role: "市场负责人", salesMode: "续签客户", project: "上海 CBE", type: "品牌方", categories: "洗护、身体护理", stage: "合同待发", risk: "中", history: "去年 18㎡，希望保留原区域", potential: "高", nextFollow: "", notes: "关注买家邀约和展位位置，需要尽快确认合同节点。", createdAt: today.toISOString() }],
+      opsRecords: [],
+      settings: { cloudEndpoint: "", cloudToken: "", aiEndpoint: "", aiModel: "", aiToken: "" },
+      syncLog: []
+    };
+    let state = loadState();
+    function createId() { return window.crypto?.randomUUID ? window.crypto.randomUUID() : `id-${Date.now()}-${Math.random().toString(16).slice(2)}`; }
+    function text(value) { return String(value || "").trim(); }
+    function escapeHtml(value) { return String(value || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;"); }
+    function formatDate(value) { return value ? new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(value)) : "未设置"; }
+    function collectForm(form) { return Object.fromEntries(new FormData(form).entries()); }
+    function includesAny(record, keyword) { return Object.values(record).join(" ").toLowerCase().includes(keyword.toLowerCase()); }
+    function cloneData(data) { return JSON.parse(JSON.stringify(data)); }
+    function apiUrl(path) { return apiBase ? `${apiBase}${path}` : path; }
+    function toBase64(value) {
+      const bytes = new TextEncoder().encode(value);
+      let binary = "";
+      bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+      return btoa(binary);
+    }
+    function setCloudSyncStatus(message) {
+      const serverStatus = document.querySelector("#serverStatus");
+      if (serverStatus) serverStatus.textContent = message;
+    }
+    function setLoginStatus(message) {
+      const status = document.querySelector("#loginStatus");
+      if (status) status.textContent = message;
+    }
+    function showLogin(message = "请输入账号和密码。") {
+      if (loginPaused) {
+        hideLogin();
+        return;
+      }
+      if (!isCloudMode) return;
+      cloudAuthReady = false;
+      document.querySelector("#loginScreen")?.classList.remove("hidden");
+      document.querySelector("#appRoot")?.classList.add("app-locked");
+      const accountInput = document.querySelector("#loginAccount");
+      if (accountInput && !accountInput.value) accountInput.value = localStorage.getItem(cloudAccountStorageKey) || "lzddd";
+      setLoginStatus(message);
+      setTimeout(() => document.querySelector("#loginPassword")?.focus(), 0);
+    }
+    function hideLogin() {
+      cloudAuthReady = true;
+      document.querySelector("#loginScreen")?.classList.add("hidden");
+      document.querySelector("#appRoot")?.classList.remove("app-locked");
+      const passwordInput = document.querySelector("#loginPassword");
+      if (passwordInput) passwordInput.value = "";
+    }
+    async function responseMessage(response) {
+      try {
+        const data = await response.clone().json();
+        return data.message || data.error || response.statusText;
+      } catch {
+        return response.statusText || "请求失败";
+      }
+    }
+    async function apiFetch(path, options = {}) {
+      const { timeoutMs = 15000, ...fetchOptions } = options;
+      const headers = new Headers(options.headers || {});
+      const account = localStorage.getItem(cloudAccountStorageKey) || "";
+      const token = localStorage.getItem(cloudTokenStorageKey);
+      if (token) {
+        headers.set("x-lzddd-token", token);
+        if (account) headers.set("authorization", `Basic ${toBase64(`${account}:${token}`)}`);
+      }
+      const controller = new AbortController();
+      const timer = window.setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetch(apiUrl(path), { ...fetchOptions, headers, signal: fetchOptions.signal || controller.signal });
+        if (response.status === 401) {
+          const message = await responseMessage(response);
+          localStorage.removeItem(cloudTokenStorageKey);
+          if (isCloudMode) showLogin(message || "账号或密码不正确，请重新输入。");
+          throw new Error(message || "需要正确的账号和密码。");
+        }
+        return response;
+      } catch (error) {
+        if (error.name === "AbortError") {
+          throw new Error("云端接口响应超时，请刷新后重试；如果仍然这样，检查 CloudBase api2 是否为最新版本。");
+        }
+        throw error;
+      } finally {
+        window.clearTimeout(timer);
+      }
+    }
+    async function apiPostPlain(path, payload = {}, options = {}) {
+      const { timeoutMs = 15000 } = options;
+      const account = localStorage.getItem(cloudAccountStorageKey) || "";
+      const token = localStorage.getItem(cloudTokenStorageKey) || "";
+      const controller = new AbortController();
+      const timer = window.setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetch(apiUrl(path), {
+          method: "POST",
+          body: JSON.stringify({ account, token, ...payload }),
+          signal: controller.signal
+        });
+        if (response.status === 401) {
+          const message = await responseMessage(response);
+          localStorage.removeItem(cloudTokenStorageKey);
+          if (isCloudMode) showLogin(message || "账号或密码不正确，请重新输入。");
+          throw new Error(message || "需要正确的账号和密码。");
+        }
+        return response;
+      } catch (error) {
+        if (error.name === "AbortError") {
+          throw new Error("云端接口响应超时。请检查 CloudBase api2 的日志是否收到请求，或稍后重试。");
+        }
+        throw error;
+      } finally {
+        window.clearTimeout(timer);
+      }
+    }
+    function normalizeClient(client) { return { salesMode: client.salesMode || "拓客线索", project: client.project || "上海 CBE", stage: client.stage || "待触达", risk: client.risk || "低", history: client.history || "", ...client }; }
+    function normalizeState(data) {
+      return {
+        news: Array.isArray(data.news) ? data.news : [],
+        notes: Array.isArray(data.notes) ? data.notes : [],
+        knowledge: Array.isArray(data.knowledge) ? data.knowledge : [],
+        clients: Array.isArray(data.clients) ? data.clients.map(normalizeClient) : [],
+        opsRecords: Array.isArray(data.opsRecords) ? data.opsRecords : [],
+        settings: { cloudEndpoint: data.settings?.cloudEndpoint || "", cloudToken: data.settings?.cloudToken || "", aiEndpoint: data.settings?.aiEndpoint || "", aiModel: data.settings?.aiModel || "", aiToken: data.settings?.aiToken || "" },
+        syncLog: Array.isArray(data.syncLog) ? data.syncLog : []
+      };
+    }
+    function hasUserRecords(data) {
+      const normalized = normalizeState(data || {});
+      return Boolean(
+        normalized.notes.length ||
+        normalized.knowledge.length ||
+        normalized.opsRecords.length ||
+        normalized.clients.some((client) => !String(client.company || "").startsWith("示例：")) ||
+        normalized.news.some((item) => item.source !== "示例记录")
+      );
+    }
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(storageKey) || localStorage.getItem(legacyStorageKey);
+        return saved ? normalizeState(JSON.parse(saved)) : cloneData(starterData);
+      } catch { return cloneData(starterData); }
+    }
+    async function saveState() {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+      if (isCloudMode && !cloudAuthReady) {
+        showLogin("请先登录，登录后我会继续保存到云端。");
+        return false;
+      }
+      if (hasServer) {
+        try {
+          const response = await apiPostPlain("/api/write", { state });
+          if (!response.ok) throw new Error(await responseMessage(response));
+          if (isCloudMode) setCloudSyncStatus("已保存到云端。公司电脑刷新后会看到同一份数据。");
+          return true;
+        } catch (error) {
+          if (isCloudMode) setCloudSyncStatus(`云端保存失败：${error.message || "请重新登录后再试。"}`);
+          return false;
+        }
+      }
+      return true;
+    }
+    async function loadServerState({ blockLogin = true } = {}) {
+      if (!hasServer) return;
+      if (isCloudMode && !loginPaused && !localStorage.getItem(cloudTokenStorageKey)) {
+        showLogin("请输入账号和密码，进入后就不会反复弹窗。");
+        return;
+      }
+      try {
+        if (isCloudMode) cloudAuthReady = true;
+        const response = await apiPostPlain("/api/read");
+        if (!response.ok) throw new Error(await responseMessage(response));
+        const localState = normalizeState(cloneData(state));
+        const serverState = normalizeState(await response.json());
+        if (hasUserRecords(serverState) || hasUserRecords(localState)) {
+          state = normalizeState({
+            ...localState,
+            settings: { ...localState.settings, ...serverState.settings, cloudToken: localState.settings.cloudToken, aiToken: "" },
+            news: mergeById(serverState.news, localState.news),
+            notes: mergeById(serverState.notes, localState.notes),
+            knowledge: mergeById(serverState.knowledge, localState.knowledge),
+            clients: mergeById(serverState.clients, localState.clients),
+            opsRecords: mergeById(serverState.opsRecords, localState.opsRecords),
+            syncLog: mergeById(serverState.syncLog, localState.syncLog)
+          });
+          localStorage.setItem(storageKey, JSON.stringify(state));
+          if (isCloudMode) saveState().then(() => setCloudSyncStatus("已同步：本机数据和云端数据已合并，并保存到 CloudBase。"));
+        }
+        renderAll();
+        if (isCloudMode) hideLogin();
+        loadAiConfig().then(renderAll);
+      } catch (error) {
+        if (isCloudMode && blockLogin) {
+          showLogin(error.message || "读取云端数据失败，请重新输入账号密码。");
+        } else if (isCloudMode) {
+          setCloudSyncStatus(`云端数据稍后同步：${error.message || "暂时读取失败。"}`);
+        }
+      }
+    }
+    async function refreshCloudState() {
+      if (!isCloudMode || !cloudAuthReady || !hasServer || document.visibilityState === "hidden") return;
+      try {
+        const response = await apiPostPlain("/api/read");
+        if (!response.ok) throw new Error(await responseMessage(response));
+        const serverState = normalizeState(await response.json());
+        if (!hasUserRecords(serverState)) return;
+        state = serverState;
+        localStorage.setItem(storageKey, JSON.stringify(state));
+        renderAll();
+        setCloudSyncStatus("已从云端刷新最新数据。");
+      } catch (error) {
+        setCloudSyncStatus(`云端刷新失败：${error.message || "请稍后再试。"}`);
+      }
+    }
+    function startCloudAutoRefresh() {
+      if (!isCloudMode || cloudRefreshTimer) return;
+      cloudRefreshTimer = window.setInterval(refreshCloudState, 60000);
+      window.addEventListener("focus", refreshCloudState);
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") refreshCloudState();
+      });
+    }
+    async function loadAiConfig() {
+      if (!hasServer) return;
+      if (isCloudMode && !cloudAuthReady) return;
+      try {
+        const response = await apiFetch("/api/ai-config");
+        const config = await response.json();
+        state.settings.aiEndpoint = config.aiEndpoint || "";
+        state.settings.aiModel = config.aiModel || "";
+        state.settings.aiToken = "";
+      } catch {}
+    }
+    async function verifySavedLogin() {
+      if (!isCloudMode) return;
+      if (loginPaused) {
+        cloudAuthReady = true;
+        hideLogin();
+        setCloudSyncStatus("免登录云同步已开启：正在读取 CloudBase 数据。");
+        loadServerState({ blockLogin: false });
+        return;
+      }
+      if (!localStorage.getItem(cloudTokenStorageKey)) {
+        showLogin("请输入账号和密码，进入后就不会反复弹窗。");
+        return;
+      }
+      cloudAuthReady = true;
+      hideLogin();
+      setCloudSyncStatus("已进入工作台，正在后台验证并同步云端数据。");
+      loadServerState({ blockLogin: false });
+    }
+    function mergeById(currentRecords, incomingRecords) {
+      const merged = new Map();
+      [...(currentRecords || []), ...(incomingRecords || [])].forEach((record) => {
+        if (!record || typeof record !== "object") return;
+        const normalized = { ...record, id: record.id || createId() };
+        merged.set(normalized.id, { ...(merged.get(normalized.id) || {}), ...normalized });
+      });
+      return [...merged.values()];
+    }
+    function byMode(mode) { return state.clients.filter((client) => client.salesMode === mode || client.salesMode === "两者都可能"); }
+    function dueClients() { const todayKey = new Date().toISOString().slice(0, 10); return state.clients.filter((client) => client.nextFollow && client.nextFollow <= todayKey); }
+    function riskClients() { return state.clients.filter((client) => client.risk === "高" || ["待报价", "合同待发", "合同审批", "待付款"].includes(client.stage)); }
+    function recentNews(limit = 6) { return [...state.news].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, limit); }
+    function recentNotes(limit = 8) { return [...state.notes].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, limit); }
+    function recentOpsRecords(limit = 6) { return [...state.opsRecords].sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt)).slice(0, limit); }
+    function renderStats() {
+      document.querySelector("#todayText").textContent = dateFormat.format(today);
+      document.querySelector("#renewalCount").textContent = byMode("续签客户").length;
+      document.querySelector("#prospectCount").textContent = byMode("拓客线索").length;
+      document.querySelector("#riskCount").textContent = riskClients().length;
+      document.querySelector("#followCount").textContent = dueClients().length;
+      document.querySelector("#serviceBanner").style.display = hasServer ? "none" : "block";
+      document.querySelector("#serviceBannerLink").href = `http://127.0.0.1:${servicePort}/#view-dashboard`;
+    }
+    function renderDashboard() {
+      const due = dueClients(), risks = riskClients(), prospects = byMode("拓客线索").filter((client) => client.stage !== "已签约").slice(0, 4);
+      document.querySelector("#todayActionList").innerHTML = [
+        due.length ? `今日到期跟进：${due.map((client) => client.company).join("、")}` : "今天没有到期跟进客户。",
+        risks.length ? `优先推进风险/合同节点：${risks.slice(0, 4).map((client) => client.company).join("、")}` : "当前没有明显高风险合同节点。",
+        prospects.length ? `拓客优先名单：${prospects.map((client) => client.company).join("、")}` : "拓客线索较少，可以先新增杭州/巡展客户。",
+        "固定事项：工作日记得分享 1 条行业资讯；客户沟通后顺手补展讯、微信、走访或云快选记录。"
+      ].map((item) => `<article class="item"><p>${escapeHtml(item)}</p></article>`).join("");
+      const groups = [["上海 CBE 续签", byMode("续签客户")], ["杭州/巡展拓客", byMode("拓客线索")], ["高潜客户", state.clients.filter((client) => client.potential === "高")]];
+      document.querySelector("#pipelineList").innerHTML = groups.map(([name, list]) => `<article class="item"><h3>${escapeHtml(name)}</h3><p>${list.length ? list.slice(0, 5).map((client) => `${client.company}（${client.stage || "待触达"}）`).join("、") : "暂无记录"}</p></article>`).join("");
+    }
+    function clientSuggestion(client) {
+      if (client.salesMode === "续签客户") return client.risk === "高" ? "优先确认顾虑和决策人，必要时请主管介入。" : "围绕去年参展效果、展位保留和买家邀约推进续签。";
+      return `用${client.categories || "日化品类"}趋势切入，先判断是否适配${client.project || "杭州/巡展"}。`;
+    }
+    function renderClients() {
+      const keyword = text(document.querySelector("#clientSearch").value), mode = document.querySelector("#clientModeFilter").value, project = document.querySelector("#clientProjectFilter").value;
+      const list = state.clients.filter((item) => !mode || item.salesMode === mode).filter((item) => !project || item.project === project).filter((item) => !keyword || includesAny(item, keyword)).sort((a, b) => String(a.nextFollow || "9999").localeCompare(String(b.nextFollow || "9999")));
+      const container = document.querySelector("#clientList");
+      if (!list.length) { container.innerHTML = '<div class="empty">还没有匹配的客户资料。</div>'; return; }
+      container.innerHTML = list.map((item) => `<article class="item"><div class="item-head"><div><h3>${escapeHtml(item.company)}</h3><div class="meta"><span class="tag">${escapeHtml(item.salesMode)}</span><span class="tag blue">${escapeHtml(item.project)}</span><span class="tag">${escapeHtml(item.stage)}</span><span class="tag rose">风险：${escapeHtml(item.risk)}</span><span>跟进：${formatDate(item.nextFollow)}</span></div></div><button class="ghost" type="button" data-delete="clients" data-id="${item.id}">删除</button></div><p>${escapeHtml(item.contact || "联系人待补充")} ${escapeHtml(item.role || "")} · ${escapeHtml(item.type || "类型待补充")} · ${escapeHtml(item.categories || "品类待补充")}</p><div class="insight-grid"><div class="insight"><b>历史/合同</b><span>${escapeHtml(item.history || "待补充")}</span></div><div class="insight"><b>需求/备注</b><span>${escapeHtml(item.notes || "待补充")}</span></div><div class="insight"><b>AI 建议</b><span>${escapeHtml(clientSuggestion(item))}</span></div></div></article>`).join("");
+    }
+    function ensureOpsOptions() {
+      const taskOptions = opsTasks.map((task) => `<option>${escapeHtml(task.title)}</option>`).join("");
+      const taskSelect = document.querySelector("#opsTaskSelect");
+      const filterSelect = document.querySelector("#opsRecordTaskFilter");
+      if (!taskSelect.dataset.ready) {
+        taskSelect.innerHTML = taskOptions;
+        taskSelect.dataset.ready = "true";
+      }
+      if (!filterSelect.dataset.ready) {
+        filterSelect.innerHTML = `<option value="">全部事项</option>${taskOptions}`;
+        filterSelect.dataset.ready = "true";
+      }
+      const dateInput = document.querySelector("#opsRecordForm").elements.completedAt;
+      if (!dateInput.value) dateInput.value = new Date().toISOString().slice(0, 10);
+    }
+    function renderOps() {
+      ensureOpsOptions();
+      document.querySelector("#opsTaskList").innerHTML = opsTasks.map((task) => `<article class="item ops-card"><div class="item-head"><div><h3>${escapeHtml(task.title)}</h3><div class="meta"><span class="tag">${escapeHtml(task.cadence)}</span><span class="tag blue">${escapeHtml(task.weight)}</span></div></div></div><p>${escapeHtml(task.standard)}</p><div class="ops-meta"><span><b>范围：</b>${escapeHtml(task.scope)}</span><span><b>留痕：</b>${escapeHtml(task.evidence)}</span></div></article>`).join("");
+      const keyword = text(document.querySelector("#opsSearch").value), task = document.querySelector("#opsRecordTaskFilter").value;
+      const list = state.opsRecords.filter((item) => !task || item.task === task).filter((item) => !keyword || includesAny(item, keyword)).sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
+      const container = document.querySelector("#opsRecordList");
+      if (!list.length) { container.innerHTML = '<div class="empty">还没有事项记录。完成展讯、问卷、走访、云快选或合同动作后，可以在左侧保存。</div>'; return; }
+      container.innerHTML = list.map((item) => `<article class="item"><div class="item-head"><div><h3>${escapeHtml(item.task)}</h3><div class="meta"><span class="tag">${escapeHtml(item.project || "通用事项")}</span><span>${formatDate(item.completedAt || item.createdAt)}</span><span>${escapeHtml(item.target || "未填写对象")}</span></div></div><button class="ghost" type="button" data-delete="opsRecords" data-id="${item.id}">删除</button></div><p>${escapeHtml(item.detail)}</p><div class="insight-grid"><div class="insight"><b>证明材料</b><span>${escapeHtml(item.evidence || "待补充")}</span></div><div class="insight"><b>下一步</b><span>${escapeHtml(item.nextStep || "暂无")}</span></div><div class="insight"><b>记录价值</b><span>可用于月度复盘、OA 汇总、主管沟通和服务考核留痕。</span></div></div></article>`).join("");
+    }
+    function summarizeNotesLocally() {
+      const notes = recentNotes(8);
+      if (!notes.length) return "写下几条随记后，这里会帮你总结最近关注点、可转成的话术和下一步建议。";
+      const categoryCounts = notes.reduce((acc, note) => { acc[note.category] = (acc[note.category] || 0) + 1; return acc; }, {});
+      const topCategories = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name, count]) => `${name} ${count} 条`).join("、");
+      const themes = [...new Set(notes.map((note) => note.title || note.source || note.category).filter(Boolean))].slice(0, 4);
+      const customerAngles = notes.filter((note) => ["客户话题", "拓客机会", "续签提醒"].includes(note.category)).slice(0, 3);
+      return [
+        `最近你主要在关注：${topCategories || "行业观察"}。`,
+        "",
+        `可沉淀主题：${themes.length ? themes.join("；") : "继续多写几条，主题会更明显。"}。`,
+        "",
+        "我的建议：",
+        customerAngles.length ? `1. 先把 ${customerAngles[0].title || customerAngles[0].category} 转成一个客户问题，用来打开对话。` : "1. 下一条随记可以刻意写“这能问客户什么”，这样更容易变成销售动作。",
+        "2. 每周挑 2-3 条随记放进产出中心，形成给主管看的判断，而不是只停留在看资讯。",
+        "3. 如果某个方向连续出现 3 次，就把它升级为客户开发标签，例如家清、香氛、头皮护理、渠道下沉。"
+      ].join("\n");
+    }
+    function renderNotes() {
+      document.querySelector("#noteInsight").textContent = summarizeNotesLocally();
+      const keyword = text(document.querySelector("#noteSearch").value), category = document.querySelector("#noteCategoryFilter").value;
+      const list = state.notes.filter((item) => !category || item.category === category).filter((item) => !keyword || includesAny(item, keyword)).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const container = document.querySelector("#noteList");
+      if (!list.length) { container.innerHTML = '<div class="empty">还没有随记。看完资讯后，不用写完整文章，先把想到的一句话保存下来。</div>'; return; }
+      container.innerHTML = list.map((item) => `<article class="item"><div class="item-head"><div><h3>${escapeHtml(item.title || "未命名随记")}</h3><div class="meta"><span class="tag">${escapeHtml(item.category)}</span><span class="tag blue">${escapeHtml(item.stakeholder)}</span><span>${formatDate(item.createdAt)}</span></div></div><button class="ghost" type="button" data-delete="notes" data-id="${item.id}">删除</button></div><p>${escapeHtml(item.body)}</p><div class="insight-grid"><div class="insight"><b>来源</b><span>${escapeHtml(item.source || "未填写")}</span></div><div class="insight"><b>下一步</b><span>${escapeHtml(item.nextStep || "待补充")}</span></div><div class="insight"><b>可转成</b><span>${escapeHtml(noteSuggestion(item))}</span></div></div></article>`).join("");
+    }
+    function noteSuggestion(note) {
+      if (note.category === "拓客机会") return "一段首触达理由，或者一个客户筛选标签。";
+      if (note.category === "续签提醒") return "续签沟通里的风险提醒、资源承诺或下一步动作。";
+      if (note.category === "客户话题") return "一个开放式问题，放进客户拜访或微信沟通。";
+      if (note.category === "主管汇报") return "周报里的行业判断和项目建议。";
+      if (note.category === "暂时疑问") return "术语助手问题，或下一次要查的资料。";
+      return "行业观察、客户话术或展会选题。";
+    }
+    function generateRenewalScript(client, news) {
+      return `${client?.company || "贵司"}您好，去年贵司在 CBE 的参展基础已经比较清晰。今年我们观察到${news?.title || "日化买家对细分品类和渠道效率的关注提升"}，如果今年继续强化渠道对接和品牌曝光，我建议尽早确认展位和合同节点，也方便我们后续安排更合适的买家邀约资源。`;
+    }
+    function generateProspectScript(client, news) {
+      return `${client?.company || "您"}您好，我是 CBE 美博会项目这边。最近我们关注到${news?.title || "头皮护理、香氛个护和家清细分趋势"}，和${client?.categories || "日化品类"}品牌的渠道增长很相关。如果您今年希望拓展区域渠道或接触更多买家，${client?.project || "杭州美博会/巡展"}可能是一个不错的切入场景。我想先了解一下您今年重点拓展的渠道和品类。`;
+    }
+    function buildOutputs() {
+      const renewals = byMode("续签客户"), prospects = byMode("拓客线索"), due = dueClients(), risks = riskClients(), news = recentNews(4);
+      const ops = recentOpsRecords(6);
+      const notes = recentNotes(6);
+      const renewalDaily = [`上海 CBE 续签日报（${dateFormat.format(today)}）`, "", `续签客户：${renewals.length} 位；待跟进：${due.filter((c) => c.salesMode !== "拓客线索").length} 位；风险/合同节点：${risks.filter((c) => c.salesMode !== "拓客线索").length} 位。`, "重点客户：", ...(renewals.length ? renewals.slice(0, 6).map((c, i) => `${i + 1}. ${c.company}｜${c.stage}｜风险${c.risk}｜下一步：${clientSuggestion(c)}`) : ["暂无"]), "", "需要主管支持：", ...(risks.filter((c) => c.risk === "高").length ? risks.filter((c) => c.risk === "高").slice(0, 4).map((c, i) => `${i + 1}. ${c.company}｜${c.notes || "待补充"}`) : ["暂无"])].join("\n");
+      const prospectDaily = [`杭州/巡展拓客日报（${dateFormat.format(today)}）`, "", `拓客线索：${prospects.length} 位；高潜：${prospects.filter((c) => c.potential === "高").length} 位。`, "优先开发：", ...(prospects.length ? prospects.slice(0, 6).map((c, i) => `${i + 1}. ${c.company}｜${c.project}｜${c.categories || "品类待补充"}｜建议：${clientSuggestion(c)}`) : ["暂无"]), "", "首触达话术：", generateProspectScript(prospects[0], news[0])].join("\n");
+      const bossBrief = ["给主管看的工作简报", "", `当前工作台沉淀客户 ${state.clients.length} 位，其中续签 ${renewals.length} 位，拓客 ${prospects.length} 位；资讯 ${state.news.length} 条；随记 ${state.notes.length} 条；事项记录 ${state.opsRecords.length} 条。`, "工具价值：成熟项目提升续签推进效率，新项目提升拓客判断和话术质量，同时把资讯、随记与服务考核动作转成可复用的销售素材。", `今日建议优先级：${due.length ? `先跟进 ${due[0].company}` : risks.length ? `先处理 ${risks[0].company}` : "补充客户资料和跟进日期"}。`].join("\n");
+      const salesScripts = ["销售话术库", "", "续签客户：", generateRenewalScript(renewals[0], news[0]), "", "拓客客户：", generateProspectScript(prospects[0], news[0])].join("\n");
+      const noteBrief = ["随记总结与建议", "", summarizeNotesLocally(), "", "最近随记：", ...(notes.length ? notes.map((item, i) => `${i + 1}. ${item.title || item.category}\n   想法：${item.body}\n   下一步：${item.nextStep || noteSuggestion(item)}`) : ["暂无随记。建议看完资讯后，先保存一个“这能问客户什么？”的想法。"])].join("\n");
+      const opsBrief = ["服务事项记录摘要", "", "固定提醒：工作日资讯分享、展讯发送、客户问卷、客户微信、云快选资料、裂变工具、客户走访、合同发票规范都需要留痕。", "", "最近记录：", ...(ops.length ? ops.map((item, i) => `${i + 1}. ${item.task}｜${formatDate(item.completedAt || item.createdAt)}｜${item.target || "未填写对象"}｜${item.detail}`) : ["暂无事项记录，建议从今天的客户沟通开始补一条。"])].join("\n");
+      return [{ title: "上海 CBE 续签日报", body: renewalDaily }, { title: "杭州/巡展拓客日报", body: prospectDaily }, { title: "给主管看的简报", body: bossBrief }, { title: "销售话术库", body: salesScripts }, { title: "随记总结与建议", body: noteBrief }, { title: "服务事项记录摘要", body: opsBrief }];
+    }
+    function renderOutputs() {
+      const outputs = buildOutputs();
+      window.currentOutputs = outputs;
+      document.querySelector("#outputList").innerHTML = outputs.map((output, index) => `<article class="output-card"><h3>${escapeHtml(output.title)}</h3><button class="secondary" type="button" data-copy-output="${index}">复制这段</button><pre>${escapeHtml(output.body)}</pre></article>`).join("");
+    }
+    function renderTermAssistant() {
+      document.querySelector("#quickTerms").innerHTML = quickTermList.map((term) => `<button type="button" data-quick-term="${escapeHtml(term)}">${escapeHtml(term)}</button>`).join("");
+      const form = document.querySelector("#aiConfigForm");
+      form.elements.aiEndpoint.value = state.settings.aiEndpoint || "";
+      form.elements.aiModel.value = state.settings.aiModel || "";
+      form.elements.aiToken.value = "";
+    }
+    function explainTermLocally(question) {
+      const normalized = question.replace(/\s+/g, "").toLowerCase();
+      const entry = Object.entries(termLibrary).find(([term]) => normalized.includes(term.toLowerCase()));
+      const term = entry ? entry[0] : question.trim();
+      const body = entry ? entry[1] : "这个词暂时不在内置术语库里。建议先判断它属于渠道、品类、供应链、法规、销售流程还是展会场景，再补充一个客户案例。";
+      return [`术语：${term}`, "", `是什么：${body}`, "", "销售怎么用：把它转成客户问题，例如“您今年更关注渠道拓展、动销支持还是品牌曝光？”", "", "可沉淀：保存到知识库后，可以复用到日报、客户话术和主管汇报。"].join("\n");
+    }
+    async function explainTermWithExternalAI(question) {
+      if (!hasServer) return "";
+      const response = await apiFetch("/api/ai", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ messages: [{ role: "system", content: "你是CBE日化销售新人助手。用中文解释术语，并说明续签和拓客怎么用。" }, { role: "user", content: question }] }) });
+      if (!response.ok) throw new Error("AI接口返回异常");
+      const data = await response.json();
+      if (!data.ok) throw new Error(data.message || "AI接口未配置");
+      return data.answer || "";
+    }
+    function renderSources() {
+      document.querySelector("#sourceList").innerHTML = sources.map((source) => `<article class="source-card"><div class="meta"><span class="tag">${escapeHtml(source.type)}</span></div><h3>${escapeHtml(source.name)}</h3><p>${escapeHtml(source.note)}</p><a href="${source.url}">打开来源</a></article>`).join("");
+      renderFetchedNews();
+    }
+    function renderFetchedNews() {
+      const fetched = state.news.filter((item) => item.autoFetched || item.url).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const domestic = fetched.filter((item) => item.region !== "global").slice(0, 10);
+      const global = fetched.filter((item) => item.region === "global").slice(0, 2);
+      const list = [...domestic, ...global];
+      document.querySelector("#fetchedNewsList").innerHTML = list.length ? list.map((item) => `<article class="item"><h3>${item.url ? `<a class="item-link" href="${escapeHtml(item.url)}">${escapeHtml(item.title)}</a>` : escapeHtml(item.title)}</h3><div class="meta"><span class="tag">${item.region === "global" ? "海外参考" : "国内资讯"}</span><span class="tag blue">${escapeHtml(item.category)}</span><span>${formatDate(item.createdAt)}</span></div><p>${escapeHtml(item.summary)}</p><div class="item-links">${item.url ? `<a class="item-link" href="${escapeHtml(item.url)}">打开原文</a>` : ""}<a class="item-link" href="#view-notes" data-view="notes">写随记</a></div></article>`).join("") : '<div class="empty">还没有抓取到资讯。请先点击上方“抓取今日资讯”。</div>';
+    }
+    function renderAll() {
+      renderStats();
+      renderDashboard();
+      renderClients();
+      renderOps();
+      renderNotes();
+      renderOutputs();
+      renderTermAssistant();
+      renderSources();
+    }
+    function showView(viewName) {
+      if (viewName === "learning") viewName = "notes";
+      document.querySelectorAll(".nav [data-view]").forEach((item) => item.classList.toggle("active", item.dataset.view === viewName));
+      document.querySelectorAll(".view").forEach((view) => view.classList.toggle("hidden", view.id !== `view-${viewName}`));
+    }
+    async function removeItem(collection, id) {
+      const index = state[collection].findIndex((item) => item.id === id);
+      if (index >= 0) { state[collection].splice(index, 1); await saveState(); renderAll(); }
+    }
+    async function copyText(value) { try { await navigator.clipboard.writeText(value); return true; } catch { return false; } }
+
+    document.querySelector(".nav").addEventListener("click", (event) => {
+      const link = event.target.closest("[data-view]");
+      if (link) showView(link.dataset.view);
+    });
+    window.addEventListener("hashchange", () => showView(location.hash.replace("#view-", "") || "dashboard"));
+    document.querySelector("#clientForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      state.clients.unshift({ id: createId(), ...collectForm(form), createdAt: new Date().toISOString() });
+      form.reset();
+      await saveState();
+      renderAll();
+    });
+    document.querySelector("#noteForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const record = collectForm(form);
+      state.notes.unshift({ id: createId(), title: record.title || record.category, ...record, createdAt: new Date().toISOString() });
+      form.reset();
+      await saveState();
+      renderAll();
+    });
+    document.querySelector("#opsRecordForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      state.opsRecords.unshift({ id: createId(), ...collectForm(form), createdAt: new Date().toISOString() });
+      form.reset();
+      form.elements.completedAt.value = new Date().toISOString().slice(0, 10);
+      await saveState();
+      renderAll();
+    });
+    document.querySelector("#loadSampleNote").addEventListener("click", () => {
+      const form = document.querySelector("#noteForm");
+      form.elements.title.value = "头皮护理为什么适合做客户开场";
+      form.elements.category.value = "客户话题";
+      form.elements.stakeholder.value = "品牌方";
+      form.elements.source.value = "今天看到的头皮护理/洗护趋势资讯";
+      form.elements.body.value = "很多洗护品牌不只是讲清洁，而是在讲头皮健康、情绪体验和线下体验。这个话题适合问客户今年是不是需要更多渠道承接，而不是单纯问要不要参展。";
+      form.elements.nextStep.value = "下次联系洗护客户时，用“今年您更想强化线上声量还是线下渠道承接？”作为开场问题。";
+    });
+    document.querySelector("#refreshNoteInsightButton").addEventListener("click", () => {
+      document.querySelector("#noteInsight").textContent = summarizeNotesLocally();
+    });
+    ["clientSearch", "clientModeFilter", "clientProjectFilter", "noteSearch", "noteCategoryFilter", "opsSearch", "opsRecordTaskFilter"].forEach((id) => document.querySelector(`#${id}`).addEventListener("input", renderAll));
+    document.body.addEventListener("click", async (event) => {
+      const del = event.target.closest("[data-delete]");
+      if (del) await removeItem(del.dataset.delete, del.dataset.id);
+    });
+    document.body.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-copy-output]");
+      if (!button) return;
+      const output = window.currentOutputs?.[Number(button.dataset.copyOutput)];
+      const ok = output ? await copyText(output.body) : false;
+      document.querySelector("#outputStatus").textContent = ok ? "已复制到剪贴板。" : "复制被浏览器限制了，可以手动选中文本复制。";
+    });
+    document.querySelector("#refreshOutputButton").addEventListener("click", () => { renderOutputs(); document.querySelector("#outputStatus").textContent = "已根据最新记录刷新产出。"; });
+    document.querySelector("#copyAllOutputButton").addEventListener("click", async () => {
+      const all = buildOutputs().map((output) => `## ${output.title}\n\n${output.body}`).join("\n\n");
+      const ok = await copyText(all);
+      document.querySelector("#outputStatus").textContent = ok ? "全部产出已复制。" : "复制被浏览器限制了，可以下载 Markdown。";
+    });
+    document.querySelector("#exportOutputButton").addEventListener("click", () => {
+      const all = buildOutputs().map((output) => `## ${output.title}\n\n${output.body}`).join("\n\n");
+      const blob = new Blob([all], { type: "text/markdown;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `CBE-日化销售产出-${new Date().toISOString().slice(0, 10)}.md`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+    document.querySelector("#termForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const question = text(event.currentTarget.elements.question.value);
+      const result = document.querySelector("#termResult");
+      result.textContent = "正在解释...";
+      try { result.textContent = await explainTermWithExternalAI(question) || explainTermLocally(question); }
+      catch { result.textContent = `${explainTermLocally(question)}\n\n本地 AI 中转暂时不可用或未配置令牌，已使用内置术语库回答。`; }
+    });
+    document.querySelector("#quickTerms").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-quick-term]");
+      if (!button) return;
+      document.querySelector("#termForm").elements.question.value = `${button.dataset.quickTerm}是什么？`;
+      document.querySelector("#termResult").textContent = explainTermLocally(button.dataset.quickTerm);
+    });
+    document.querySelector("#saveTermButton").addEventListener("click", async () => {
+      const question = text(document.querySelector("#termForm").elements.question.value);
+      const body = text(document.querySelector("#termResult").textContent);
+      if (!question || !body) return;
+      state.knowledge.unshift({ id: createId(), title: question.replace(/是什么[？?]?$/, ""), category: "术语", level: "刚了解", body, useCase: "用于续签、拓客、日报和客户沟通。", createdAt: new Date().toISOString() });
+      await saveState();
+      document.querySelector("#termResult").textContent = `${body}\n\n已保存到知识库。`;
+    });
+    document.querySelector("#aiConfigForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const config = collectForm(event.currentTarget);
+      if (!hasServer) {
+        document.querySelector("#termResult").textContent = "请先用本地服务版打开网页，再保存 AI 中转设置。";
+        return;
+      }
+      const response = await apiFetch("/api/ai-config", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(config)
+      });
+      const saved = await response.json();
+      state.settings.aiEndpoint = saved.aiEndpoint || "";
+      state.settings.aiModel = saved.aiModel || "";
+      state.settings.aiToken = "";
+      renderTermAssistant();
+      document.querySelector("#termResult").textContent = saved.hasToken
+        ? "本地 AI 中转设置已保存。现在提问会先走本地接口，再由后台调用 AI。"
+        : "接口地址和模型已保存，但还没有令牌。未配置令牌时会继续使用内置术语库。";
+    });
+    document.querySelector("#syncNewsButton").addEventListener("click", async () => {
+      if (!hasServer) { document.querySelector("#serverStatus").textContent = "自动抓取需要使用本地服务地址打开。"; return; }
+      document.querySelector("#serverStatus").textContent = "正在抓取国内公开日化/美妆资讯，请稍等...";
+      try {
+        const response = await apiFetch("/api/sync-news", { method: "POST" });
+        const result = await response.json();
+        state = normalizeState(result.state || {});
+        renderAll();
+        document.querySelector("#serverStatus").textContent = `国内资讯抓取完成：扫描 ${result.feeds || 0} 个国内资讯源，新增 ${result.added || 0} 条国内报道。`;
+      } catch { document.querySelector("#serverStatus").textContent = "抓取失败。可能是某些资讯源暂时无法访问，稍后可以再试。"; }
+    });
+    document.querySelector("#syncGlobalNewsButton").addEventListener("click", async () => {
+      if (!hasServer) { document.querySelector("#serverStatus").textContent = "海外参考抓取需要使用本地服务地址打开。"; return; }
+      document.querySelector("#serverStatus").textContent = "正在尝试抓取海外参考；如果当前网络不能访问海外站点，可能会失败或等待较久。";
+      try {
+        const response = await apiFetch("/api/sync-news?includeGlobal=1", { method: "POST" });
+        const result = await response.json();
+        state = normalizeState(result.state || {});
+        renderAll();
+        document.querySelector("#serverStatus").textContent = `海外参考抓取完成：新增 ${result.globalAdded || 0} 条海外参考，国内报道 ${result.domesticAdded || 0} 条。`;
+      } catch { document.querySelector("#serverStatus").textContent = "海外参考抓取失败。没有 VPN 或海外站点不可访问时，可以先忽略这个按钮。"; }
+    });
+    document.querySelector("#checkRemindersButton").addEventListener("click", () => {
+      const due = dueClients();
+      document.querySelector("#serverStatus").textContent = due.length ? `今天需要跟进：${due.map((client) => client.company).join("、")}` : "今天没有到期跟进客户。";
+    });
+    document.querySelector("#loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const account = text(document.querySelector("#loginAccount").value);
+      const token = text(document.querySelector("#loginPassword").value);
+      if (!account) {
+        setLoginStatus("请先输入账号。");
+        document.querySelector("#loginAccount")?.focus();
+        return;
+      }
+      if (!token) {
+        setLoginStatus("请先输入密码。");
+        document.querySelector("#loginPassword")?.focus();
+        return;
+      }
+      setLoginStatus("正在进入工作台...");
+      localStorage.setItem(cloudAccountStorageKey, account);
+      localStorage.setItem(cloudTokenStorageKey, token);
+      cloudAuthReady = true;
+      hideLogin();
+      setCloudSyncStatus("已进入工作台，正在后台验证并同步云端数据。");
+      try {
+        const response = await apiPostPlain("/api/auth", {}, { timeoutMs: 8000 });
+        if (!response.ok) throw new Error(await responseMessage(response));
+        setCloudSyncStatus("登录验证成功，正在后台同步云端数据。");
+        loadServerState({ blockLogin: false });
+      } catch (error) {
+        setCloudSyncStatus(`后台验证失败：${error.message || "账号或密码可能不正确。"} 请点左侧刷新或重新登录。`);
+      }
+    });
+    document.querySelector("#clearLoginButton").addEventListener("click", () => {
+      localStorage.removeItem(cloudAccountStorageKey);
+      localStorage.removeItem(cloudTokenStorageKey);
+      showLogin("已清除这台电脑保存的登录信息，请重新输入。");
+    });
+    renderAll();
+    showView(location.hash.replace("#view-", "") || "dashboard");
+    if (isCloudMode) {
+      startCloudAutoRefresh();
+      verifySavedLogin();
+    } else {
+      hideLogin();
+      loadServerState();
+    }
+  </script>
+</body>
+</html>
