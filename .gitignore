@@ -1,5 +1,7 @@
 .DS_Store
 node_modules/
+.env
+.env.*
 
 # 本地个人数据与运行数据，不上传到 Git
 data/*.json
